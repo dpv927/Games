@@ -1,16 +1,18 @@
 #include <math.h>
 #include <raylib.h>
-#define WINDOW_WIDTH  1000
-#define WINDOW_HEIGHT 800
-#define NUM_ORBITALS 4
+#include <stdlib.h>
+#include <time.h>
+#define WINDOW_WIDTH  800
+#define WINDOW_HEIGHT 400
+#define NUM_ORBITALS 40
+#define NUM_RINGS 20
+#define RINGS_DISTANCE 20
+#define CIRCLE_RADIUS 5
+#define RGB_to_HEX(R,G,B) ((R<<16) | (G<<8) | B)
 
-typedef struct {
-  int x;
-  int y;
-  int radius;
-} Circle;
-
-static const float DegToRad = M_PI/180;
+const float DegToRad = M_PI/180;
+const int VectorXOfsset = WINDOW_WIDTH>>1;
+const int VectorYOfsset = WINDOW_HEIGHT>>1;
 
 void rotateVector(Vector2* vec, float deg) {
   float radians, cos_rad, sin_rad;
@@ -31,22 +33,42 @@ void rotateVector(Vector2* vec, float deg) {
 
 int main(void) {
   
-  InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "basic window");
-  SetTargetFPS(60);
+  Vector2 orbitals[NUM_RINGS][NUM_ORBITALS];
+  Vector2 offsets[NUM_RINGS];
 
-  Vector2 center = {
-    .x = WINDOW_WIDTH>>1,
-    .y = (WINDOW_HEIGHT>>1)+100,
-  };
+  for (int ring = 0, offset = 0; ring<NUM_RINGS; ring++, offset+=RINGS_DISTANCE) {
+    offsets[ring].x = 100 + offset;
+    offsets[ring].y = 0;
+      
+    for (int orbital = 0; orbital<NUM_ORBITALS; orbital++) {
+      orbitals[ring][orbital].x = offsets[ring].x;
+      orbitals[ring][orbital].y = offsets[ring].y;
+      rotateVector(&offsets[ring], (float)360/NUM_ORBITALS);
+    }
+  }
+
+  InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "basic window");
+  SetTargetFPS(120);
+  srand(time(NULL));
 
   while(!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(BLACK);
+    DrawFPS(10, 10);
 
-    // Draw the center circle
-    DrawCircle(center.x, center.y, 10, RAYWHITE);
-    rotateVector(&center, 1);
+    for (int ring = 0; ring<NUM_RINGS; ring++) { 
+      for (int orbital = 0; orbital<NUM_ORBITALS; orbital++) {
+        DrawCircle(
+          orbitals[ring][orbital].x + VectorXOfsset,
+          orbitals[ring][orbital].y + VectorYOfsset,
+          CIRCLE_RADIUS,
+          GetColor(RGB_to_HEX(rand()%256, rand()%256, rand()%256))
+        );
+        rotateVector(&orbitals[ring][orbital], 1);
+      }
+    }
 
+    DrawCircle(VectorXOfsset, VectorYOfsset, 5, RAYWHITE);
     EndDrawing();
   }
 
