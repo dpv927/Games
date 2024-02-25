@@ -3,6 +3,7 @@
 # git commit & push
 
 git pull
+git config pull.rebase false
 git add .
 git add -u
 git commit -m update
