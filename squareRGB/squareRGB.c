@@ -52,6 +52,7 @@ void moveRectangle(Rectangle* square, Vector2 squareSpeed, Rectangle* innerSquar
 int main(void) {
 
   InitWindow(WindowWidth, WindowHeight, "basic window");
+  //SetConfigFlags(FLAG_FULLSCREEN_MODE);
   ClearBackground(RAYWHITE);
   SetTargetFPS(60);
 
