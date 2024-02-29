@@ -1,10 +1,10 @@
 #include <raylib.h>
 #include <stdio.h>
 
-const int WindowWidth  = 1000;
-const int WindowHeight = 600;
-const float SquareBorder = 3.0f;
-const float SquareWidth  = 90.0f;
+const int WindowWidth  = 600;
+const int WindowHeight = 400;
+const float SquareBorder = 2.0f;
+const float SquareWidth  = 40.0f;
 const float SquareInitX  = (WindowWidth/2.0f)  - (SquareWidth/2.0f);
 const float SquareInitY  = (WindowHeight/2.0f) - (SquareWidth/2.0f);
 const float InnerSquareWith = SquareWidth - (SquareBorder*2.0f);
@@ -52,12 +52,11 @@ void moveRectangle(Rectangle* square, Vector2 squareSpeed, Rectangle* innerSquar
 int main(void) {
 
   InitWindow(WindowWidth, WindowHeight, "basic window");
-  //SetConfigFlags(FLAG_FULLSCREEN_MODE);
   ClearBackground(RAYWHITE);
-  SetTargetFPS(60);
+  SetTargetFPS(100);
 
   Color innerSquareColor = {255, 0, 0, 255};
-  Vector2 squareSpeed = { 7, 7 };
+  Vector2 squareSpeed = { 4, 4 };
   
   Rectangle square = { 
     .x = SquareInitX,
