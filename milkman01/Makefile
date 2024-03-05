@@ -1,5 +1,5 @@
-SRCS=2dcamera.c
-TARGET=2dcamera
+SRCS=milkman.c
+TARGET=milkman
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 all:
