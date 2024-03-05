@@ -1,5 +1,5 @@
-SRCS=creeper.c
-TARGET=creeper
+SRCS=2dcamera.c
+TARGET=2dcamera
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 all:

@@ -100,7 +100,7 @@ int main(void) {
 
   while(!WindowShouldClose()) {
     BeginDrawing();
-    ClearBackground(GetColor(0x181818AA));
+    ClearBackground(GetColor(0xffffffAA));
       
     if(IsKeyDown(KEY_DOWN)) 
       camera.position.y -= 1;
