@@ -34,13 +34,17 @@ int main(void) {
   InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Basic 2D Game");
   SetTargetFPS(60);
 
+  Camera2D camera;
+  int motionX, motionY;
+  int operator;
+
   // We are not going to load the character sprite from an image,
   // we are going to draw it by hand with rectangles. Its better.
   // Isn't it?
   // 
   // Initialize the player body
-  player.body.x = WINDOW_WIDTH>>1;
-  player.body.y = WINDOW_HEIGHT>>1;
+  player.body.x = (WINDOW_WIDTH-PLAYER_WIDTH)/2.0f;
+  player.body.y = (WINDOW_HEIGHT-PLAYER_HEIGTH)/2.0f;
   player.body.width = PLAYER_WIDTH;
   player.body.height = PLAYER_HEIGTH;
 
@@ -74,10 +78,60 @@ int main(void) {
   player.hat3.x = player.hat1.x;
   player.hat3.y = player.hat1.y + player.hat3.height;
 
+  // Initialize the game camera
+  camera.zoom = 1.0f;
+  camera.offset = (Vector2){0};
+  camera.rotation = 0;
+  camera.target = (Vector2){0,0};
+
   while (!WindowShouldClose()) {
     BeginDrawing();
+    BeginMode2D(camera);
     ClearBackground(WINDOW_COLOR);
 
+    // Check player motion
+    motionX = motionY = 0;
+    operator = 0;
+    
+    if(IsKeyDown(KEY_W)){
+      motionY = 1;
+      operator = -1;
+    } else if(IsKeyDown(KEY_S)){
+      motionY = 1;
+      operator = 1;
+    } else if(IsKeyDown(KEY_A)){
+      motionX = 1;
+      operator = -1;
+    } else if(IsKeyDown(KEY_D)){
+      motionX = 1;
+      operator = 1;
+    }
+
+    // Update the player and camera position
+    operator *= CAMERA_SPEED;
+    if(motionX) {  
+      // Move player horizontally
+      player.body.x += operator;
+      player.rightEye.x += operator;
+      player.leftEye.x += operator;
+      player.hat1.x += operator;
+      player.hat2.x += operator;
+      player.hat3.x += operator;
+      // Move the camera
+      camera.target.x += operator;
+
+    } else if(motionY) { 
+      // Move player vertically
+      player.body.y += operator;
+      player.rightEye.y += operator;
+      player.leftEye.y += operator;
+      player.hat1.y += operator;
+      player.hat2.y += operator;
+      player.hat3.y += operator;
+      // Move the camera
+      camera.target.y += operator;
+    }
+    
     // Draw the player
     DrawRectangleRec(player.body, BODY_COLOR);
     DrawRectangleRec(player.leftEye, EYES_COLOR);
@@ -86,6 +140,9 @@ int main(void) {
     DrawRectangleRec(player.hat2, HAT2_COLOR);
     DrawRectangleRec(player.hat3, HAT3_COLOR);
 
+    DrawRectangle(800, 200, 800, 800, GRAY);
+    
+    EndMode2D();
     EndDrawing();
   }
 
