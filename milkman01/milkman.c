@@ -83,55 +83,21 @@ int main(void) {
   camera.offset = (Vector2){0};
   camera.rotation = 0;
   camera.target = (Vector2){0,0};
-
+    
   while (!WindowShouldClose()) {
     BeginDrawing();
     BeginMode2D(camera);
     ClearBackground(WINDOW_COLOR);
 
-    // Check player motion
-    motionX = motionY = 0;
-    operator = 0;
-    
-    if(IsKeyDown(KEY_W)){
-      motionY = 1;
-      operator = -1;
-    } else if(IsKeyDown(KEY_S)){
-      motionY = 1;
-      operator = 1;
-    } else if(IsKeyDown(KEY_A)){
-      motionX = 1;
-      operator = -1;
-    } else if(IsKeyDown(KEY_D)){
-      motionX = 1;
-      operator = 1;
+    if(player.body.y + player.body.height < 600) {
+      player.body.y += CAMERA_SPEED;
+      player.rightEye.y += CAMERA_SPEED;
+      player.leftEye.y += CAMERA_SPEED;
+      player.hat1.y += CAMERA_SPEED;
+      player.hat2.y += CAMERA_SPEED;
+      player.hat3.y += CAMERA_SPEED;
     }
-
-    // Update the player and camera position
-    operator *= CAMERA_SPEED;
-    if(motionX) {  
-      // Move player horizontally
-      player.body.x += operator;
-      player.rightEye.x += operator;
-      player.leftEye.x += operator;
-      player.hat1.x += operator;
-      player.hat2.x += operator;
-      player.hat3.x += operator;
-      // Move the camera
-      camera.target.x += operator;
-
-    } else if(motionY) { 
-      // Move player vertically
-      player.body.y += operator;
-      player.rightEye.y += operator;
-      player.leftEye.y += operator;
-      player.hat1.y += operator;
-      player.hat2.y += operator;
-      player.hat3.y += operator;
-      // Move the camera
-      camera.target.y += operator;
-    }
-    
+        
     // Draw the player
     DrawRectangleRec(player.body, BODY_COLOR);
     DrawRectangleRec(player.leftEye, EYES_COLOR);
@@ -140,8 +106,12 @@ int main(void) {
     DrawRectangleRec(player.hat2, HAT2_COLOR);
     DrawRectangleRec(player.hat3, HAT3_COLOR);
 
-    DrawRectangle(800, 200, 800, 800, GRAY);
-    
+    DrawLine(-10000, player.body.y+(player.body.height/2.0f), 10000, player.body.y+(player.body.height/2.0f), RED);
+    DrawLine(player.body.x+(player.body.width/2.0f), -10000, player.body.x+(player.body.width/2.0f), 10000, RED);
+    DrawRectangle(-1000, 600, 10000, 1000, BLUE);
+    DrawRectangle(300, 600, 1000, 1000, GRAY);
+
+
     EndMode2D();
     EndDrawing();
   }
