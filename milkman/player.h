@@ -11,6 +11,9 @@ struct Player {
   Rectangle hat1;
   Rectangle hat2;
   Rectangle hat3;
+  /* Movement */
+  float tPosx;
+  float tPosy;
 };
 
 void ApplyConstantsScale(float scale);

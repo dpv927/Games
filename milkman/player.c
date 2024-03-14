@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include "player.h"
 #include "constants.h"
 
 /* Player movement settings */
@@ -17,19 +18,6 @@ static float EyeWidth  = 15;
 static float EyeHeight = 15;
 static float EyeOffset = 20;
 static float HatHeight = 35;
-
-struct Player {
-  /* Sprite things */
-  Rectangle rightEye;
-  Rectangle leftEye;
-  Rectangle body;
-  Rectangle hat1;
-  Rectangle hat2;
-  Rectangle hat3;
-  /* Movement */
-  float tPosx;
-  float tPosy;
-};
 
 void ApplyConstantsScale(float scale) {
   PlayerWidth  *= scale;
