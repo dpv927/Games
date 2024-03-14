@@ -1,4 +1,2 @@
-
 exec # binary executables
 *.o  # object files
-

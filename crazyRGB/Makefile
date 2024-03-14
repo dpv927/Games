@@ -1,5 +1,5 @@
 SRCS=./crazyRGB.c
-TARGET=crazyRGB
+TARGET=exec
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 all:
