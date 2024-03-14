@@ -28,8 +28,8 @@ int main(void) {
     tPosition.y += input.y;
 
     // Interpolate position for smooth movement
-    pPosition.x = pPosition.x + Lerp * (tPosition.x-pPosition.x);
-    pPosition.y = pPosition.y + Lerp * (tPosition.y-pPosition.y);
+    pPosition.x += Lerp * (tPosition.x-pPosition.x);
+    pPosition.y += Lerp * (tPosition.y-pPosition.y);
 
     DrawRectangle(pPosition.x, pPosition.y, 100, 100, BLACK);
     EndDrawing();
