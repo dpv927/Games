@@ -1,7 +1,7 @@
 # Creeper
 
 A 3d drawing of a Minecraft 'Creeper', made with only cubes and no textures.
-You can move the camera with ne following keys:
+You can move the camera with the following keys:
   - Move in X: `Arrow_Right`, `Arrow_Left`
   - Move in Y: `Arrow_Down`, `Arrow_Up`  
   - Move in Z: `W`, `S`
