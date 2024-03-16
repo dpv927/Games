@@ -21,6 +21,13 @@ struct Player {
   Rectangle hat1;
   Rectangle hat2;
   Rectangle hat3;
+  /* Animation */
+  enum Animation {
+    IDLE_FRONT,
+    IDLE_BACK,
+    IDLE_RIGHT,
+    IDLE_LEFT
+  } animation;
   /* Motion */
   float tPosx;
   float tPosy;

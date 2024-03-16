@@ -11,6 +11,17 @@ static float HatHeight = 35;
 static float Hat1Offset = 90*0.1f;
 static float Hat2Offset = 90*0.15f;
 
+float bodyHeight = 75;
+float bodyWidth = 90;
+float eyeWidth = 15;
+float eyeHeight = 15;
+float eyeOffset = 20;
+float hat1Height = 35;
+float hat13Width = 90*0.8f;
+float hat23Height = 35/4.0f;
+float hat2Width = 90*1.3f;
+
+
 void ApplyPropiertiesScale(float scale) {
   PlayerWidth  *= scale;
   PlayerHeight *= scale;
@@ -24,6 +35,10 @@ void ApplyPropiertiesScale(float scale) {
 
 void InitializePlayer(struct Player* player) {
   // Initialize the player body
+  // The default sprite is IDLE_FRONT,
+  // so we can define the behavior for that
+  // sprite
+  player->animation = IDLE_FRONT;
   player->body.x = (WINDOW_WIDTH-PlayerWidth)/2.0f;
   player->body.y = (WINDOW_HEIGHT-PlayerHeight)/2.0f;
   player->body.width = PlayerWidth;
