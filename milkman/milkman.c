@@ -8,12 +8,13 @@ int main(void) {
 
   // Initialize players
   struct Player milkman;
-  ApplyConstantsScale(0.6f);
+  ApplyPropiertiesScale(0.8f);
   InitializePlayer(&milkman);
 
   while (!WindowShouldClose()) {
     BeginDrawing();
       ClearBackground(WINDOW_COLOR);
+      DrawFPS(10,10);
       MovePlayer(&milkman);
       DrawPlayer(milkman);
     EndDrawing();
