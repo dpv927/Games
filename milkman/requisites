@@ -1,0 +1,30 @@
+
+[Player]
+-- Propiedades --
+Sprite (Textura)
+Life
+Damage
+Speed
+Milk (Score)
+Buffs (Lista)
+-- Funciones -- 
+Disparar
+Dibujarse
+Moverse
+
+[Buff]
+-- Propiedades -- 
+internal (para enemigos, sin Sprite)
+Sprite
+isTemporal
+Update (aplicar buff)
+
+[Enemy]
+Sprite
+Life
+Damage
+Milk (un numero para drop)
+DropBuffs (Con posibilidad de drop)
+OwnBuffs
+CanSummon
+Summons (otro Enemigo)

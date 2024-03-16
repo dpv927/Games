@@ -12,10 +12,9 @@ int main(void) {
   InitializePlayer(&milkman);
 
   while (!WindowShouldClose()) {
+    MovePlayer(&milkman);
     BeginDrawing();
       ClearBackground(WINDOW_COLOR);
-      DrawFPS(10,10);
-      MovePlayer(&milkman);
       DrawPlayer(milkman);
     EndDrawing();
   }

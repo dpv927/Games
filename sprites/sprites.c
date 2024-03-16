@@ -1,26 +1,42 @@
 #include <raylib.h>
+#define TEXPATH "milkman.png"
+#define ZERO (Vector2){0}
 
-const int baseWidthResolution;
-const int baseHeightResolution;
+/* Base screen resoltion 
+ *   Using 1366x768px */
+#define BASEWRES 1366;
+#define BASEHRES 768;
+float scaleX = 1.0f;
+float scaleY = 1.0f;
 
-int main(void) {
-
+void ConfigureScreen(void) {
   InitWindow(0,0,"Window Title");
   SetConfigFlags(FLAG_FULLSCREEN_MODE);
   ToggleFullscreen();
-  
-  Texture sprites = LoadTexture("milkman.png");
+  SetTargetFPS(60);
+ 
+  // Calculate objects scale
+  scaleX = (float)GetScreenWidth()/BASEWRES;
+  scaleY = (float)GetScreenHeight()/BASEHRES;
+}
+
+int main(void) {
+  ConfigureScreen();
+
+  Texture sprites = LoadTexture(TEXPATH);
   SetTextureFilter(sprites, TEXTURE_FILTER_TRILINEAR);
 
-  /* Texture frames */ 
-  Vector2 position = {350,280};
-  Rectangle frameRec = { 0.0f, 0.0f, (float)sprites.width/8, (float)sprites.height };
   int currentFrame = 0;
   int framesCounter = 0;
   int framesSpeed = 8;
-  float scale = 1.0f;
-
-  SetTargetFPS(60);
+  
+  Rectangle frame = {0};
+  frame.width  = (float)sprites.width/8;
+  frame.height = (float)sprites.height;
+  
+  Rectangle position = {0};
+  position.width  = frame.width*scaleX;
+  position.height = frame.height*scaleY; 
 
   while (!WindowShouldClose()) {
     framesCounter++;
@@ -29,12 +45,12 @@ int main(void) {
       framesCounter = 0;
       currentFrame++;
       if (currentFrame > 5) currentFrame = 0;
-      frameRec.x = (float)currentFrame*(float)sprites.width/4;
+      frame.x = (float)currentFrame*(float)sprites.width/4;
     }
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    DrawTexturePro(sprites, frameRec, (Rectangle){0,0,frameRec.width*scale,frameRec.height*scale}, (Vector2){0}, 0, WHITE);
+    DrawTexturePro(sprites, frame, position, ZERO, 0, WHITE);
     EndDrawing();
   }
 
