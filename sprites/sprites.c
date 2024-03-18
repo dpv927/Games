@@ -20,6 +20,15 @@ void ConfigureScreen(void) {
   scaleY = (float)GetScreenHeight()/BASEHRES;
 }
 
+enum {
+  DOWN,
+  UP,
+  LEFT,
+  RIGHT,
+  DIAG_LEFT,
+  DIAG_RIGHT,
+} direction;
+
 int main(void) {
   ConfigureScreen();
 
@@ -31,22 +40,37 @@ int main(void) {
   int framesSpeed = 8;
   
   Rectangle frame = {0};
-  frame.width  = (float)sprites.width/8;
-  frame.height = (float)sprites.height;
+  frame.width  = (float)sprites.width/6;
+  frame.height = (float)sprites.height-1;
   
   Rectangle position = {0};
   position.width  = frame.width*scaleX;
   position.height = frame.height*scaleY; 
 
-  while (!WindowShouldClose()) {
-    framesCounter++;
+  int moveX;
+  int moveY;
 
-    if (framesCounter >= (60/framesSpeed)) {
-      framesCounter = 0;
-      currentFrame++;
-      if (currentFrame > 5) currentFrame = 0;
-      frame.x = (float)currentFrame*(float)sprites.width/4;
-    }
+  while (!WindowShouldClose()) {
+    moveX = (IsKeyDown(KEY_D)-IsKeyDown(KEY_A));
+    moveY = (IsKeyDown(KEY_S)-IsKeyDown(KEY_W));
+    
+    // Get the indicated sprite for the selected 
+    // player movement.
+    if(moveX==0 && moveY==0 || moveX==0 && moveY==1) 
+      frame.x = DOWN;
+    if(moveX == 0 && moveY == -1)
+      frame.x = UP*(float)frame.width;
+    if(moveX == -1 && moveY == 0)
+      frame.x = LEFT*(float)frame.width;
+    if(moveX == 1 && moveY == 0)
+      frame.x = RIGHT*(float)frame.width;
+    if(moveX == -1 && moveY != 0)
+      frame.x = DIAG_LEFT*(float)frame.width;
+    if(moveX == 1 && moveY != 0)
+      frame.x = DIAG_RIGHT*(float)frame.width;
+  
+    position.x += moveX * 8;
+    position.y += moveY * 8;
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
