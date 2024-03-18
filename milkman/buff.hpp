@@ -6,13 +6,14 @@
 
 struct Buff {
   std::string name;
-  bool temporal;
+  bool isTemporal;
+  bool isVisible;
   float lifeTime;
   Texture2D texture;
-
+  
   Buff(std::string, bool, float, Texture2D);
-  void ApplyBuff(struct Player&);
-  void Draw();
+  virtual void UpdateBuff(struct Player&); 
+  virtual void Draw();
 };
 
 #endif // !_BUFF_H

@@ -25,6 +25,7 @@ struct Player {
   std::vector<Projectile> projectiles;
 
   Player(Projectile, Texture2D);
+  void AddBuff(Buff);
   void Shoot();
   void Move();
   void Draw();
