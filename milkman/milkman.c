@@ -10,7 +10,7 @@ float scaleX = 1.0f;
 float scaleY = 1.0f;
 
 void ConfigureScreen(void) {
-  InitWindow(0,0,"Window Title");
+  InitWindow(0,0,"Milkman");
   SetConfigFlags(FLAG_FULLSCREEN_MODE);
   ToggleFullscreen();
   SetTargetFPS(60);
@@ -35,17 +35,19 @@ int main(void) {
   Texture sprites = LoadTexture(TEXPATH);
   SetTextureFilter(sprites, TEXTURE_FILTER_TRILINEAR);
 
-  int currentFrame = 0;
-  int framesCounter = 0;
-  int framesSpeed = 8;
-  
   Rectangle frame = {0};
   frame.width  = (float)sprites.width/6;
   frame.height = (float)sprites.height-1;
   
-  Rectangle position = {0};
+  Rectangle position;
+  position.x = GetScreenWidth()/2.0f;
+  position.y = GetScreenHeight()/2.0f;
   position.width  = frame.width*scaleX;
   position.height = frame.height*scaleY; 
+
+  Vector2 targetPosition;
+  targetPosition.x = position.x;
+  targetPosition.y = position.y;
 
   int moveX;
   int moveY;
@@ -53,6 +55,11 @@ int main(void) {
   while (!WindowShouldClose()) {
     moveX = (IsKeyDown(KEY_D)-IsKeyDown(KEY_A));
     moveY = (IsKeyDown(KEY_S)-IsKeyDown(KEY_W));
+    targetPosition.x += moveX * 10;
+    targetPosition.y += moveY * 10;
+
+    position.x += 0.08f * (targetPosition.x - position.x);
+    position.y += 0.08f * (targetPosition.y - position.y);
     
     // Get the indicated sprite for the selected 
     // player movement.
@@ -69,9 +76,6 @@ int main(void) {
     if(moveX == 1 && moveY != 0)
       frame.x = DIAG_RIGHT*(float)frame.width;
   
-    position.x += moveX * 8;
-    position.y += moveY * 8;
-
     BeginDrawing();
     ClearBackground(RAYWHITE);
     DrawTexturePro(sprites, frame, position, ZERO, 0, WHITE);

@@ -1,4 +1,4 @@
-SRCS=milkman.c player.c
+SRCS=milkman.c
 TARGET=exec
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
