@@ -1,3 +1,14 @@
+Un jugador se puede mover por el mapa (Escuchar el teclado), Dibujarse en pantalla,
+disparar. Tiene una cantidad de vida, velocidad, damage, elixir, una lista de Buffs 
+que tiene en un momento dado y una textura2d.
+
+Un buff puede ser temporal o no. Los buffs pueden tener o no una Textura2d. Finalmente
+tienen una funcion asociada que permite aplicar el buff a un jugador.
+
+Finalmente tenemos un enemigo. Este tiene una cantidad de vida, damage, elixir, un 
+Sprite2d, una lista de buffs con una probabilidad de drop para cada uno (Una lista de
+pares).
+
 
 [Player]
 -- Propiedades --

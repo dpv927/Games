@@ -1,36 +1,62 @@
-
+#include <string>
 #include <raylib.h>
+#include <utility>
+#include <vector>
 
-/* Player movement */
-#define PLAYER_LERP  0.1f
-#define PLAYER_SPEED 6
+using namespace std;
+typedef struct Player Player;
+typedef struct Buff Buff;
+typedef struct Projectile Projectile;  
 
-/* Player sprite settings */
-#define BODY_COLOR (Color){17,17,17,255}
-#define EYES_COLOR (Color){239,239,239,255}
-#define HAT1_COLOR (Color){130,90,90,255}
-#define HAT2_COLOR (Color){159,98,98,255}
-#define HAT3_COLOR (Color){152,120,120,255}
-static float PlayerWidth  = 90;
-static float PlayerHeight = 75;
-static float EyeWidth  = 15;
-static float EyeHeight = 15;
-static float EyeOffset = 20;
-static float HatHeight = 35;
+struct Buff {
+  string name;
+  bool temporal;
+  float lifeTime;
+  float totalTime;
+  Texture2D texture;
 
-class Player {
-  
-public: 
-  /* Sprite shapes */
-  Rectangle rightEye;
-  Rectangle leftEye;
-  Rectangle body;
-  Rectangle hat1;
-  Rectangle hat2;
-  Rectangle hat3;
-  /* Movement */
-  float tPosx;
-  float tPosy;
+  void ApplyBuff(Player&);
+  void Draw();
 };
 
+struct Projectile {
+  int damage;
+  float velocity;
+  Vector2 target;
+  Texture2D sprite;
 
+  void Ai();
+  void Draw();
+};
+
+struct Player {
+  int maxLife;
+  int life;
+  int milk;
+  Projectile shoot;
+  Texture2D sprite;
+  vector<Buff>buffs;
+
+  enum Direction {
+    NORTH, SOUTH,
+    EAST, WEST,
+    NORTHEAST,
+    NORTHWEST,
+    SOUTHEAST,
+    SOUTHWEST
+  } direction;
+  
+  void Shoot();
+  void Move();
+  void Draw();
+};
+
+struct Enemy {
+  int maxLife;
+  int life;
+  bool melee;
+  int milk;
+  Projectile shoot;
+  Texture2D sprite;
+  vector<pair<Buff,float>>buffs;
+};
