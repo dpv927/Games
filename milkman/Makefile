@@ -1,9 +1,9 @@
-SRCS=milkman.c
+SRCS=milkman.cpp
 TARGET=exec
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 all:
-	gcc $(SRCS) $(FLAGS) -o $(TARGET)
+	g++ $(SRCS) $(FLAGS) -o $(TARGET)
 
 clean: 
 	rm -rf *.o
