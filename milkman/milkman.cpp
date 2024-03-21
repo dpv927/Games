@@ -1,21 +1,26 @@
-#include <algorithm>
 #include <cmath>
-#include <ctime>
-#include <iostream>
 #include <raylib.h>
 #include <vector>
+#include <chrono>
+#include <memory>
 #define TEXPATH "milkman.png"
 #define BASEWRES 1366;
 #define BASEHRES 768;
 
 using namespace std;
+using namespace std::chrono;
 
 struct Projectile {
   Vector2 position;
   float speedX;
   float speedY;
   float radius;
-  float lifetime;
+  time_point<milliseconds> spawnTime;
+
+  Projectile(time_point<milliseconds>spawn, Vector2 pos, float spX, 
+             float spY, float rad):
+    spawnTime(spawn), position(pos), speedX(spX), 
+    speedY(spY), radius(rad) {};
 };
 
 struct Player {
@@ -23,8 +28,7 @@ struct Player {
   Rectangle frame;
   Rectangle position;
   Vector2 targetPosition;
-  vector<Projectile*> projectiles;
-  float lastShot;
+  vector<unique_ptr<Projectile>> projectiles;
 } player;
 
 int main(void) {
@@ -63,8 +67,7 @@ int main(void) {
 
   player.targetPosition.x = player.position.x;
   player.targetPosition.y = player.position.y;
-  player.lastShot = time(NULL);
-
+  time_point lastShot = high_resolution_clock::now();
 
   while (!WindowShouldClose()) {
     moveX = (IsKeyDown(KEY_D)-IsKeyDown(KEY_A));
@@ -86,31 +89,36 @@ int main(void) {
 
     // Si el usuario ha presionado la tecla espacio, generar un projectil;
     // Generar un projectil con direccion de las teclas de direccion
-    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && (difftime(time(NULL),player.lastShot) > 5)) {
-      player.lastShot = time(NULL);
+    time_point timeNow = high_resolution_clock::now();
+    double diff = duration_cast<milliseconds>(timeNow - lastShot)
+      .count()/1000.0f;
 
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && diff > 0.3f) {
+      lastShot = timeNow;
       int mx = GetMouseX()-player.position.x;
       int my = GetMouseY()-player.position.y;
       float mod = sqrt(mx*mx + my*my);
 
-      Projectile* projectile = new Projectile();
-      projectile->position  = Vector2{
-        player.position.x+player.position.width/2,
-        player.position.y+player.position.height/2
-      };
-      
-      projectile->speedX = mx/mod * 10;
-      projectile->speedY = my/mod * 10;
-
-      projectile->radius = 10;
-      player.projectiles.push_back(projectile);
+      player.projectiles.push_back(make_unique<Projectile>(
+        Vector2{
+          player.position.x+player.position.width/2,
+          player.position.y+player.position.height/2
+        },
+        (mx/mod)*10,
+        (my/mod)*10,
+        10
+      ));
     }
 
     // Actualizar los projectiles
-    for (Projectile* p : player.projectiles) {
-      p->position.x += p->speedX;
-      p->position.y += p->speedY;
+    for(auto it = player.projectiles.begin(); it != player.projectiles.end(); ++it) {
+      if(it->get()->)
     }
+
+    //for (Projectile* p : player.projectiles) {
+    //  p->position.x += p->speedX;
+    //  p->position.y += p->speedY;
+    // }
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -128,3 +136,4 @@ int main(void) {
   CloseWindow();
   return 0;
 }
+
