@@ -15,12 +15,11 @@ struct Projectile {
   float speedX;
   float speedY;
   float radius;
-  time_point<milliseconds> spawnTime;
+  time_point<high_resolution_clock> spawnTime;
 
-  Projectile(time_point<milliseconds>spawn, Vector2 pos, float spX, 
-             float spY, float rad):
-    spawnTime(spawn), position(pos), speedX(spX), 
-    speedY(spY), radius(rad) {};
+  Projectile(Vector2 pos, float spX, float spY, float rad):
+    position(pos), speedX(spX), speedY(spY), radius(rad),
+    spawnTime(high_resolution_clock::now()) {};
 };
 
 struct Player {
@@ -67,7 +66,7 @@ int main(void) {
 
   player.targetPosition.x = player.position.x;
   player.targetPosition.y = player.position.y;
-  time_point lastShot = high_resolution_clock::now();
+  auto lastShot = high_resolution_clock::now();
 
   while (!WindowShouldClose()) {
     moveX = (IsKeyDown(KEY_D)-IsKeyDown(KEY_A));
@@ -81,19 +80,18 @@ int main(void) {
     // Get the indicated sprite for the selected 
     // player movement.
     player.frame.x = (moveX==0 && moveY==0 || moveX==0 && moveY==1)? 0 :
-      (moveX == 0 && moveY == -1)? player.frame.width :
-      (moveX == -1 && moveY == 0)? 2*(float)player.frame.width :
-      (moveX == 1 && moveY == 0)? 3*(float)player.frame.width :
-      (moveX == -1 && moveY != 0)? 4*(float)player.frame.width :
-      (moveX == 1 && moveY != 0)? 5*(float)player.frame.width : 0;
+      (moveX ==  0 && moveY == -1)? player.frame.width :
+      (moveX == -1 && moveY ==  0)? 2*(float)player.frame.width :
+      (moveX ==  1 && moveY ==  0)? 3*(float)player.frame.width :
+      (moveX == -1 && moveY !=  0)? 4*(float)player.frame.width :
+      (moveX ==  1 && moveY !=  0)? 5*(float)player.frame.width : 0;
 
     // Si el usuario ha presionado la tecla espacio, generar un projectil;
     // Generar un projectil con direccion de las teclas de direccion
     time_point timeNow = high_resolution_clock::now();
-    double diff = duration_cast<milliseconds>(timeNow - lastShot)
-      .count()/1000.0f;
+    double diff = duration_cast<milliseconds>(timeNow - lastShot).count();
 
-    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && diff > 0.3f) {
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && diff > 300) {
       lastShot = timeNow;
       int mx = GetMouseX()-player.position.x;
       int my = GetMouseY()-player.position.y;
@@ -104,32 +102,35 @@ int main(void) {
           player.position.x+player.position.width/2,
           player.position.y+player.position.height/2
         },
-        (mx/mod)*10,
-        (my/mod)*10,
+        (mx/mod)*8,
+        (my/mod)*8,
         10
       ));
     }
-
-    // Actualizar los projectiles
-    for(auto it = player.projectiles.begin(); it != player.projectiles.end(); ++it) {
-      if(it->get()->)
-    }
-
-    //for (Projectile* p : player.projectiles) {
-    //  p->position.x += p->speedX;
-    //  p->position.y += p->speedY;
-    // }
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
     DrawFPS(10, 10);
     
-    for (Projectile* p : player.projectiles) {
-      DrawCircleV(p->position, p->radius, BLACK);
-      DrawCircleV(p->position, p->radius*0.85f, WHITE);
-    }
-    DrawTexturePro(player.sprites, player.frame, player.position, Vector2{0}, 0, WHITE);
+    // Comprobar en la lista de proyectiles si existen algunos los cuales 
+    // han cumplido su tiempo de vida. En ese caso, borrarlo, y en caso 
+    // contrario, actualizar su posicion y dibujarlo
     
+    for (auto it = player.projectiles.begin(); it != player.projectiles.end();) {
+      auto& projectile = *it;
+
+      if (duration_cast<milliseconds>(timeNow - projectile->spawnTime).count() >= 2000) {
+        it = player.projectiles.erase(it);
+      } else {
+        projectile->position.x += projectile->speedX;
+        projectile->position.y += projectile->speedY;
+        DrawCircleV(projectile->position, projectile->radius, BLACK);
+        DrawCircleV(projectile->position, projectile->radius*0.85f, WHITE);
+        ++it;
+      }
+    }
+
+    DrawTexturePro(player.sprites, player.frame, player.position, Vector2{0}, 0, WHITE);
     EndDrawing();
   }
 
