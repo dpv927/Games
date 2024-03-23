@@ -3,9 +3,12 @@
 #include <vector>
 #include <chrono>
 #include <memory>
+
 #define TEXPATH "milkman.png"
 #define BASEWRES 1366;
 #define BASEHRES 768;
+#define BASE_PL_SPEED 10
+#define BASE_PR_SPEED 8
 
 using namespace std;
 using namespace std::chrono;
@@ -33,22 +36,30 @@ struct Player {
 int main(void) {
   float scaleX;
   float scaleY;
+  float playerSpeed;
+  float projectileSpeed;
   int moveX;
   int moveY;
+  int screenWidth;
+  int screenHeight;
 
   // --------------- //
   // Window Settings //
   // --------------- //
 
-  InitWindow(800,500,"Milkman");
-  //SetConfigFlags(FLAG_FULLSCREEN_MODE);
-  //ToggleFullscreen();
+  InitWindow(0,0,"Milkman");
+  SetConfigFlags(FLAG_FULLSCREEN_MODE);
+  ToggleFullscreen();
   SetTargetFPS(60);
  
-  // Calculate objects scale
-  scaleX = (float)GetScreenWidth()/BASEWRES;
-  scaleY = (float)GetScreenHeight()/BASEHRES;
+  screenWidth = GetScreenWidth();
+  screenHeight = GetScreenHeight();
 
+  // Calculate objects scale
+  scaleX = (float)screenWidth/BASEWRES;
+  scaleY = (float)screenHeight/BASEHRES;
+  playerSpeed = BASE_PL_SPEED * scaleX;
+  projectileSpeed = BASE_PR_SPEED * scaleX;
 
   // ---------------- //
   //    Init Player   //
@@ -71,8 +82,8 @@ int main(void) {
   while (!WindowShouldClose()) {
     moveX = (IsKeyDown(KEY_D)-IsKeyDown(KEY_A));
     moveY = (IsKeyDown(KEY_S)-IsKeyDown(KEY_W));
-    player.targetPosition.x += moveX * 10;
-    player.targetPosition.y += moveY * 10;
+    player.targetPosition.x += moveX * playerSpeed;
+    player.targetPosition.y += moveY * playerSpeed;
 
     player.position.x += 0.08f * (player.targetPosition.x - player.position.x);
     player.position.y += 0.08f * (player.targetPosition.y - player.position.y);
@@ -102,15 +113,14 @@ int main(void) {
           player.position.x+player.position.width/2,
           player.position.y+player.position.height/2
         },
-        (mx/mod)*8,
-        (my/mod)*8,
-        10
+        (mx/mod)*projectileSpeed,
+        (my/mod)*projectileSpeed,
+        10*scaleY
       ));
     }
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    DrawFPS(10, 10);
     
     // Comprobar en la lista de proyectiles si existen algunos los cuales 
     // han cumplido su tiempo de vida. En ese caso, borrarlo, y en caso 
@@ -119,7 +129,8 @@ int main(void) {
     for (auto it = player.projectiles.begin(); it != player.projectiles.end();) {
       auto& projectile = *it;
 
-      if (duration_cast<milliseconds>(timeNow - projectile->spawnTime).count() >= 2000) {
+      if (projectile->position.x > screenWidth || projectile->position.y > screenHeight ||
+        duration_cast<milliseconds>(timeNow - projectile->spawnTime).count() >= 2000) {
         it = player.projectiles.erase(it);
       } else {
         projectile->position.x += projectile->speedX;
