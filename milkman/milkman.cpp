@@ -20,9 +20,10 @@ struct Projectile {
   float radius;
   time_point<high_resolution_clock> spawnTime;
 
-  Projectile(Vector2 pos, float spX, float spY, float rad):
+  Projectile(Vector2 pos, float spX, float spY, float rad,
+    time_point<high_resolution_clock> spawn):
     position(pos), speedX(spX), speedY(spY), radius(rad),
-    spawnTime(high_resolution_clock::now()) {};
+    spawnTime(spawn) {};
 };
 
 struct Player {
@@ -115,7 +116,8 @@ int main(void) {
         },
         (mx/mod)*projectileSpeed,
         (my/mod)*projectileSpeed,
-        10*scaleY
+        10*scaleY,
+        timeNow
       ));
     }
 
