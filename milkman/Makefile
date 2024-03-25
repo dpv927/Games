@@ -1,16 +1,16 @@
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
-SRCS=$(shell find . -name '*.c')
-OBJS=$(SRCS:.c=.o)
+SRCS=$(shell find . -name '*.cpp')
+OBJS=$(SRCS:.cpp=.o)
 TARGET=exec
 CC=g++
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $^ -o $@
+	$(CC) $^ -o $@ $(FLAGS)
 
-%.o: %.c
-	$(CC) -c $< -o $@
+%.o: %.cpp
+	$(CC) -c $< -o $@ $(FLAGS)
 
 clean: 
 	rm -f $(OBJS) $(TARGET)
