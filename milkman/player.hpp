@@ -10,26 +10,23 @@
 #define PlayerNumSprites 6
 #define PlayerBaseLerp 0.08f
 
-using namespace std;
-using namespace std::chrono; 
+namespace Milkman {
 
-struct Player {
-  Texture2D sprites;
-  Rectangle frame;
-  float speed;
-  float lerp;
-  Rectangle position;
-  Vector2 tPosition;
-  vector<unique_ptr<Projectile>> projectiles;
-  sysTime lastShot;
+  struct Player {
+    Texture2D sprites;
+    Rectangle frame;
+    float speed;
+    float lerp;
+    Rectangle position;
+    Vector2 tPosition;
+    vector<unique_ptr<Projectile>> projectiles;
+    sysTime lastShot;
 
-  // Constructor:
-  // - Texture & position
-  Player(char*, Vector2);
-  
-  void Move(void);
-  void Shoot(void);
-  void Draw(void);
-};
+    Player(char*, Vector2);
+    void Move(void);
+    void Shoot(void);
+    void Draw(void);
+  };
+}
 
 #endif // !_PLAYER_H

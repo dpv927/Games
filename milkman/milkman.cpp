@@ -1,16 +1,9 @@
-
 #include <chrono>
 #include <raylib.h>
 #include "player.hpp"
 #include "sys.hpp"
 
-
-int Sys::screenWidth;
-int Sys::screenHeight;
-float Sys::scaleX;
-float Sys::scaleY;
-sysTime Sys::timeNow;
-
+using namespace Milkman;
 
 int main(void) {
 
@@ -19,15 +12,18 @@ int main(void) {
   ToggleFullscreen();
   SetTargetFPS(60);
 
-  Sys::screenWidth  = GetScreenWidth();
-  Sys::screenHeight = GetScreenHeight();
-  Sys::scaleX = (float)Sys::screenWidth/BaseWidthPx;
-  Sys::scaleY = (float)Sys::screenHeight/BaseHeightPx;
+  Window::width  = GetScreenWidth();
+  Window::height = GetScreenHeight();
+  Window::scaleX = (float)Window::width/BaseWidthPx;
+  Window::scaleY = (float)Window::height/BaseHeightPx;
   
-  Player milkman((char*)"milkman.png", Vector2{Sys::screenWidth/2.0f, Sys::screenHeight/2.0f});
+  Player milkman(
+    (char*)"milkman.png",
+    Vector2{Window::width/2.0f, Window::height/2.0f}
+  );
 
   while(!WindowShouldClose()) {
-    Sys::timeNow = high_resolution_clock::now();
+    Window::timeNow = high_resolution_clock::now();
     milkman.Move();
     milkman.Shoot();
 

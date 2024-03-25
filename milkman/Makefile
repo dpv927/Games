@@ -1,9 +1,16 @@
-SRCS=milkman.cpp player.cpp projectile.cpp
-TARGET=exec
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+SRCS=$(shell find . -name '*.c')
+OBJS=$(SRCS:.c=.o)
+TARGET=exec
+CC=g++
 
-all:
-	g++ $(SRCS) $(FLAGS) -o $(TARGET)
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $^ -o $@
+
+%.o: %.c
+	$(CC) -c $< -o $@
 
 clean: 
-	rm -rf *.o
+	rm -f $(OBJS) $(TARGET)
