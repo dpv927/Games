@@ -1,4 +1,4 @@
-SRCS=milkman.cpp
+SRCS=milkman.cpp player.cpp projectile.cpp
 TARGET=exec
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 

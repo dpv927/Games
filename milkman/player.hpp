@@ -13,7 +13,6 @@
 using namespace std;
 using namespace std::chrono; 
 
-
 struct Player {
   Texture2D sprites;
   Rectangle frame;
@@ -21,7 +20,6 @@ struct Player {
   float lerp;
   Rectangle position;
   Vector2 tPosition;
-  //Projectile projectile;
   vector<unique_ptr<Projectile>> projectiles;
   sysTime lastShot;
 

@@ -1,7 +1,6 @@
+#include "projectile.hpp"
 #include "sys.hpp"
-#include <chrono>
 #include <cmath>
-#include <memory>
 #include <raylib.h>
 #include "player.hpp"
 
@@ -13,8 +12,8 @@ Player::Player(char* texture, Vector2 position) {
   this->frame.width = (float)this->sprites.width/PlayerNumSprites;
   this->frame.height = this->sprites.height-1;
 
-  this->position.x = Sys::screenWidth/2.0f;
-  this->position.y = Sys::screenHeight/2.0f;
+  this->position.x = position.x;
+  this->position.y = position.y;
   this->position.width = this->frame.width * Sys::scaleX;
   this->position.height = this->frame.height * Sys::scaleY;
 
@@ -22,15 +21,15 @@ Player::Player(char* texture, Vector2 position) {
   this->tPosition.y = this->position.y;
 
   this->speed = PlayerBaseSpeed * Sys::scaleX;
-  this->lerp = PlayerBaseLerp * Sys::scaleX;
-  this->lastShot = high_resolution_clock::now();
+  this->lerp = PlayerBaseLerp;/// * Sys::scaleX;
+  this->lastShot = Sys::timeNow;
 } 
 
 void Player::Move(void) {
   int moveX = (IsKeyDown(KEY_D) - IsKeyDown(KEY_A));
   int moveY = (IsKeyDown(KEY_S) - IsKeyDown(KEY_W));
   this->tPosition.x += moveX * this->speed;
-  this->tPosition.x += moveY * this->speed;
+  this->tPosition.y += moveY * this->speed;
 
   // Apply Interpolation for a smoother movement.
   this->position.x += this->lerp * (this->tPosition.x - this->position.x);
@@ -47,22 +46,20 @@ void Player::Move(void) {
 }
 
 void Player::Shoot(void) {
-  time_point timeNow = high_resolution_clock::now();
-
   if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && 
-     duration_cast<milliseconds>(timeNow - lastShot).count()) {
+     duration_cast<milliseconds>(Sys::timeNow - lastShot).count() > 300) {
 
-    this->lastShot = timeNow;
+    this->lastShot = Sys::timeNow;
     int mx = GetMouseX() - this->position.x;
     int my = GetMouseY() - this->position.y;
-    float mod = sqrt(exp2(mx) + exp2(my));
+    float mod = sqrt(mx*mx + my*my);
 
-    Vector2 projPos = {0};
+    Vector2 projPos;
     projPos.x = this->position.x + this->position.width/2.0f;
     projPos.y = this->position.y + this->position.height/2.0f;
 
     this->projectiles.push_back(make_unique<Projectile>(
-      projPos, timeNow));
+      projPos, (float)(mx/mod)*PROJ_SPEED, (float)(my/mod)*PROJ_SPEED));
   }
 }
 
@@ -71,8 +68,10 @@ void Player::Draw(void) {
   // Draw the player's projectiles
   for (auto it = this->projectiles.begin(); it != this->projectiles.end();) {
     auto& projectile = *it;
+    Vector2 pos = projectile->position;
 
-    if (duration_cast<milliseconds>(Sys::timeNow - projectile->spawnTime).count() >= 2000) {
+    if(pos.x > Sys::screenWidth || pos.x < 0 || pos.y > Sys::screenHeight || pos.y < 0 ||
+      duration_cast<milliseconds>(Sys::timeNow - projectile->spawnTime).count() >= 2000) {
       it = this->projectiles.erase(it);
     } else {
       projectile->ExecAi();

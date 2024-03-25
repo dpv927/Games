@@ -3,7 +3,11 @@
 
 #include <raylib.h>
 #include "types.hpp"
-#define BaseProjectileSpeed 8
+#include "sys.hpp"
+
+#define PROJ_SPEED 8
+#define PROJ_LIFE  1500
+#define PROJ_RAD   10
 
 struct Projectile {
   Vector2 position;
@@ -13,8 +17,15 @@ struct Projectile {
   long lifetime;
   sysTime spawnTime;
 
-  Projectile(Vector2 pos, sysTime spawn):
-  position(pos), spawnTime(spawn) {};
+  Projectile(void){};
+
+  Projectile(Vector2 pos, float sX, float sY):
+    position(pos),
+    speedX(sX*Sys::scaleX),
+    speedY(sY*Sys::scaleY),
+    radius(PROJ_RAD*Sys::scaleX),
+    spawnTime(Sys::timeNow),
+    lifetime(PROJ_LIFE){};
 
   void ExecAi(void);
   void Draw(void);

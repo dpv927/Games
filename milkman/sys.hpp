@@ -2,8 +2,8 @@
 #define _SYS_H
 #include "types.hpp"
 
-#define BaseWidthPx 1366;
-#define BaseHeightPx 768;
+#define BaseWidthPx 1366
+#define BaseHeightPx 768
 
 struct Sys {
   static int screenWidth;
