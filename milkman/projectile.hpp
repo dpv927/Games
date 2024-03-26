@@ -3,10 +3,7 @@
 
 #include <raylib.h>
 #include "types.hpp"
-
-#define PROJ_SPEED 8
-#define PROJ_LIFE  1500
-#define PROJ_RAD   10
+#include "sys.hpp"
 
 namespace Milkman {
   
@@ -14,15 +11,19 @@ namespace Milkman {
     Vector2 position;
     float speedX;
     float speedY;
-    float radius;
-    long lifetime;
+    long lifeTime;
     sysTime spawnTime;
 
-    Projectile(void);
-    Projectile(Vector2 pos, float sX, float sY);
-
-    void ExecAi(void);
-    void Draw(void);
+    Projectile(Vector2 position, Vector2 direction) {
+      this->position = position;
+      this->speedX = direction.x;
+      this->speedY = direction.y;
+      this->spawnTime = Window::timeNow; 
+    }
+    
+    virtual void ExecAi(void){};
+    virtual void Draw(void){};
   };
 }
+
 #endif // !_PROJECTILE_H

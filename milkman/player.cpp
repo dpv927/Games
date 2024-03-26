@@ -3,6 +3,9 @@
 #include <cmath>
 #include <raylib.h>
 #include "player.hpp"
+#include "projectiles/milkBullet.hpp"
+
+using namespace Milkman::Projectiles;
 
 namespace Milkman {
 
@@ -60,8 +63,12 @@ namespace Milkman {
       projPos.x = this->position.x + this->position.width/2.0f;
       projPos.y = this->position.y + this->position.height/2.0f;
 
-      this->projectiles.push_back(make_unique<Projectile>(
-        projPos, (float)(mx/mod)*PROJ_SPEED, (float)(my/mod)*PROJ_SPEED));
+      Vector2 projDirec;
+      projDirec.x = (mx/mod);
+      projDirec.y = (my/mod);
+
+      this->projectiles.push_back(make_unique<MilkBullet>(
+        projPos, projDirec));
     }
   }
 
@@ -73,7 +80,7 @@ namespace Milkman {
       Vector2 pos = projectile->position;
 
       if(!Window::isOutside(projectile->position) || duration_cast<milliseconds>
-        (Window::timeNow - projectile->spawnTime).count() >= projectile->lifetime) {
+        (Window::timeNow - projectile->spawnTime).count() >= projectile->lifeTime) {
         it = this->projectiles.erase(it);
       } else {
         projectile->ExecAi();
