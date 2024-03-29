@@ -3,6 +3,7 @@
 int main(void) {
 
   InitWindow(800, 800, "Window Title");
+  SetTargetFPS(60);
 
   while (!WindowShouldClose()) {
     BeginDrawing();
