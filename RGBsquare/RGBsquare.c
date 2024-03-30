@@ -1,10 +1,9 @@
 #include <raylib.h>
-#include <stdio.h>
 
-const int WindowWidth  = 600;
-const int WindowHeight = 400;
+const int WindowWidth  = 1661;
+const int WindowHeight = 853;
 const float SquareBorder = 2.0f;
-const float SquareWidth  = 40.0f;
+const float SquareWidth  = 100.0f;
 const float SquareInitX  = (WindowWidth/2.0f)  - (SquareWidth/2.0f);
 const float SquareInitY  = (WindowHeight/2.0f) - (SquareWidth/2.0f);
 const float InnerSquareWith = SquareWidth - (SquareBorder*2.0f);
@@ -53,10 +52,10 @@ int main(void) {
 
   InitWindow(WindowWidth, WindowHeight, "basic window");
   ClearBackground(RAYWHITE);
-  SetTargetFPS(100);
+  SetTargetFPS(200);
 
   Color innerSquareColor = {255, 0, 0, 255};
-  Vector2 squareSpeed = { 4, 4 };
+  Vector2 squareSpeed = { 5, 5 };
   
   Rectangle square = { 
     .x = SquareInitX,
