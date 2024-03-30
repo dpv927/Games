@@ -1,11 +1,19 @@
 #!/bin/bash
 # Automated script to make a 
 # git commit & push
+source "./.resources/newProject/errors.sh"
 
+printInfo "Pulling changes..."
 git pull
 git config pull.rebase false
+
+printInfo "Adding all the files..."
 git add .
 git add -u
+
+printInfo "Making a commit..."
 git commit -m update
+
+printInfo "Pushing..."
 git push
 git status
