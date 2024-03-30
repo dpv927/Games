@@ -25,7 +25,7 @@ for arg in "$@"; do
     if [ $# -eq 1 ]; then
       # Only if '--help' is the only 
       # parameter to the script
-      echo "$newProjPath/help.txt"
+      cat "$newProjPath/help.txt"
       exit $exitSuccess
     else
       printError "Bad argument list."
