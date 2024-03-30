@@ -1,0 +1,8 @@
+@dpv927 newProject, a non-interactive raylib project helper.
+Usage: newProject [option] ... [option] ...
+
+Options:
+  --name=<project>            Specify the name for the new project (mandatory).
+  --lang=<lang>               Sets the languaje of the project (optional, default=c).
+  --help                      Display this information.
+  --version                   Display version information.
