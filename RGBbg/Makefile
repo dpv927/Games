@@ -1,4 +1,4 @@
-SRCS=./smooth.c
+SRCS=./RGBgb.c
 TARGET=exec
 FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
