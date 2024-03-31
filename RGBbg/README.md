@@ -2,6 +2,8 @@
 <h1>RGBbg</h1>
 </div>
 
+https://github.com/dpv927/raylib/assets/113710742/46b1d5bb-3e10-45f4-86c8-81ccd5a892b1
+
 ## About
 
 Just a window with a colored background, which changes smoothly through the colors
