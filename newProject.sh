@@ -15,7 +15,7 @@ fi;
 # Variables
 project=""
 lang="c"  
-langs=("c","cpp")
+langs=("c" "cpp" "rust")
 
 
 for arg in "$@"; do
@@ -42,15 +42,15 @@ for arg in "$@"; do
   # Get the project's languaje
   if [[ $arg == --lang=* ]]; then  
     lang="${arg#*=}"
-    found=1
+    found=0
     for item in "${langs[@]}"; do
-      if [ $item == lang ]; then
-        found=0
+      if [ $item == $lang ]; then
+        found=1
         break
       fi
     done
     if [ $found -eq 0 ]; then
-      printError "'$lang': Languaje not available."
+      printError "'$lang': Language not available."
       exit $exitError
     fi
     continue
@@ -78,13 +78,16 @@ fi;
 
 # Create the project
 printInfo "Creating the project..."
-mkdir $project
 printInfo "Copiying files..."
 
 if [[ $lang == "c" ]]; then 
+  mkdir $project
   cp -r "$resources/example_c/"* $project
-elif [[ lang == "cpp" ]]; then
+elif [[ $lang == "cpp" ]]; then
+  mkdir $project
   cp -r "$resources/example_cpp/"* $project
+elif [[ $lang == "rust" ]]; then
+  cargo new $project
 fi
 
 printInfo "Finished."
