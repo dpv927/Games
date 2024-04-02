@@ -8,9 +8,9 @@ int main(void) {
   // ---------------------- //
   Vector3 bodyPosition = {.x=0,.y=0,.z=0};
   Vector3 bodyDimensions = { 
-    .x = 12, // Width 
+    .x = 10, // Width 
     .y = 40, // Height
-    .z = 12, // Width
+    .z = 20, // Width
   };
 
   // ---------------------- //
@@ -85,35 +85,60 @@ int main(void) {
     .z = -((mouth2Dimensions.z - mouth1Dimensions.z/2.0f)-3),
   };
 
+  Vector3 legs1Dimensions = {
+    .x = bodyDimensions.x*0.8f,
+    .y = headDimensions.y/1.8f,
+    .z = bodyDimensions.z,
+  };
+  Vector3 legs1Position = {
+    .x = legs1Dimensions.x,
+    .y = -bodyDimensions.y/2.0f - legs1Dimensions.y/2.0f,
+    .z = bodyPosition.z
+  };
+
+  Vector3 legs2Dimensions = {
+    .x = bodyDimensions.x*0.8f,
+    .y = headDimensions.y/1.8f,
+    .z = bodyDimensions.z,
+  };
+  Vector3 legs2Position = {
+    .x = bodyPosition.x - legs1Dimensions.x,
+    .y = -bodyDimensions.y/2.0f - legs1Dimensions.y/2.0f,
+    .z = 0
+  };
+
   /* 3D Camera */
   Camera3D camera = {
-    .position = {bodyDimensions.y,0,0} ,
+    .position = {54,2,49} ,
     .target = {0,0,0},
     .up = {0,1,0},
     .fovy = 89,
     .projection = CAMERA_PERSPECTIVE
   };
-
   
   InitWindow(800, 600, "3D graphics");
   SetTargetFPS(60);
 
   while(!WindowShouldClose()) {
     BeginDrawing();
-    ClearBackground(GetColor(0xffffffAA));
+    ClearBackground(GetColor(0xffffffAA)); 
+
+    DrawText(TextFormat("Position X: %i", (int)camera.position.x), 10, 10, 18, BLACK);
+    DrawText(TextFormat("Position Y: %i", (int)camera.position.y), 10, 30, 18, BLACK);
+    DrawText(TextFormat("Position Z: %i", (int)camera.position.z), 10, 50, 18, BLACK);
       
     if(IsKeyDown(KEY_DOWN)) 
       camera.position.y -= 1;
     else if(IsKeyDown(KEY_UP))
       camera.position.y += 1;
     else if(IsKeyDown(KEY_RIGHT))
-      camera.position.x += 1;
-    else if(IsKeyDown(KEY_LEFT))
-      camera.position.x -= 1;
-    else if(IsKeyDown(KEY_W))
-      camera.position.z -= 1;
-    else if(IsKeyDown(KEY_S))
       camera.position.z += 1;
+    else if(IsKeyDown(KEY_LEFT))
+      camera.position.z -= 1;
+    else if(IsKeyDown(KEY_W))
+      camera.position.x -= 1;
+    else if(IsKeyDown(KEY_S))
+      camera.position.x += 1;
     BeginMode3D(camera);
 
     // Draw the body 
@@ -134,6 +159,12 @@ int main(void) {
     DrawCubeV(mouth3Position, mouth3Dimensions, BLACK); // Mouth3
     DrawCubeV(mouth4Position, mouth3Dimensions, BLACK); // Mouth4
 
+    // Draw the legs
+    DrawCubeV(legs1Position, legs1Dimensions, GREEN);
+    DrawCubeWiresV(legs1Position, legs1Dimensions, BLACK);
+    DrawCubeV(legs2Position, legs2Dimensions, GREEN);
+    DrawCubeWiresV(legs2Position, legs2Dimensions, BLACK);
+  
     EndMode3D();
     EndDrawing();
   }
