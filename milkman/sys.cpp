@@ -1,4 +1,4 @@
-#include "../sys.hpp"
+#include "sys.hpp"
 #include <raylib.h>
 
 namespace Milkman {

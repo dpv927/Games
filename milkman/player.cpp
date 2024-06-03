@@ -3,7 +3,7 @@
 #include <cmath>
 #include <raylib.h>
 #include "player.hpp"
-#include "projectiles/milkBullet.hpp"
+#include "Projectiles/milkBullet.hpp"
 
 using namespace Milkman::Projectiles;
 
@@ -31,8 +31,14 @@ namespace Milkman {
   } 
 
   void Player::Move(void) {
-    int moveX = (IsKeyDown(KEY_D) - IsKeyDown(KEY_A));
-    int moveY = (IsKeyDown(KEY_S) - IsKeyDown(KEY_W));
+    double moveX = (IsKeyDown(KEY_D) - IsKeyDown(KEY_A));
+    double moveY = (IsKeyDown(KEY_S) - IsKeyDown(KEY_W));
+
+    if(moveX && moveY) {
+      moveX /= 2.0f;
+      moveY /= 2.0f; 
+    }
+    
     this->tPosition.x += moveX * this->speed;
     this->tPosition.y += moveY * this->speed;
 
@@ -53,15 +59,15 @@ namespace Milkman {
   void Player::Shoot(void) {
     if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) && 
       duration_cast<milliseconds>(Window::timeNow - lastShot).count() > 300) {
-
       this->lastShot = Window::timeNow;
-      int mx = GetMouseX() - this->position.x;
-      int my = GetMouseY() - this->position.y;
-      float mod = sqrt(mx*mx + my*my);
 
       Vector2 projPos;
       projPos.x = this->position.x + this->position.width/2.0f;
       projPos.y = this->position.y + this->position.height/2.0f;
+
+      const int mx = GetMouseX() - projPos.x;
+      const int my = GetMouseY() - projPos.y;
+      const float mod = sqrt(mx*mx + my*my);
 
       Vector2 projDirec;
       projDirec.x = (mx/mod);
