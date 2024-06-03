@@ -1,11 +1,21 @@
 #include "projectile.hpp"
 #include "sys.hpp"
 #include <cmath>
+#include <memory>
 #include <raylib.h>
 #include "player.hpp"
 #include "Projectiles/milkBullet.hpp"
 
 using namespace Milkman::Projectiles;
+
+enum PlayerAnimations {
+  DOWN=0,
+  UP,
+  LEFT ,
+  RIGHT,
+  DIG_LEFT,
+  DIG_RIGHT
+};
 
 namespace Milkman {
 
@@ -35,25 +45,27 @@ namespace Milkman {
     double moveY = (IsKeyDown(KEY_S) - IsKeyDown(KEY_W));
 
     if(moveX && moveY) {
-      moveX /= 2.0f;
-      moveY /= 2.0f; 
+      // Normalize direction vector to move at the same
+      // speed in the diagonals
+      this->tPosition.x += (moveX)/2.0f * this->speed;
+      this->tPosition.y += (moveY)/2.0f * this->speed;
+    } else {
+      this->tPosition.x += moveX * this->speed;
+      this->tPosition.y += moveY * this->speed;
     }
     
-    this->tPosition.x += moveX * this->speed;
-    this->tPosition.y += moveY * this->speed;
-
     // Apply Interpolation for a smoother movement.
     this->position.x += this->lerp * (this->tPosition.x - this->position.x);
     this->position.y += this->lerp * (this->tPosition.y - this->position.y);
 
     // After changing the player position, we need to update the 
     // player direction frame.
-    this->frame.x = (moveX==0 && moveY==0 || moveX==0 && moveY==1)? 0 :
+    this->frame.x = ((moveX==0 && moveY==0) || (moveX==0 && moveY==1))? DOWN :
       (moveX ==  0 && moveY == -1)? this->frame.width :
-      (moveX == -1 && moveY ==  0)? 2*(float)this->frame.width :
-      (moveX ==  1 && moveY ==  0)? 3*(float)this->frame.width :
-      (moveX == -1 && moveY !=  0)? 4*(float)this->frame.width :
-      (moveX ==  1 && moveY !=  0)? 5*(float)this->frame.width : 0;
+      (moveX == -1 && moveY ==  0)? LEFT*(float)this->frame.width :
+      (moveX ==  1 && moveY ==  0)? RIGHT*(float)this->frame.width :
+      (moveX == -1 && moveY !=  0)? DIG_LEFT *(float)this->frame.width :
+      (moveX ==  1 && moveY !=  0)? DIG_RIGHT*(float)this->frame.width : 0;
   }
 
   void Player::Shoot(void) {
@@ -83,7 +95,6 @@ namespace Milkman {
     // Draw the player's projectiles
     for (auto it = this->projectiles.begin(); it != this->projectiles.end();) {
       auto& projectile = *it;
-      Vector2 pos = projectile->position;
 
       if(!Window::isOutside(projectile->position) || duration_cast<milliseconds>
         (Window::timeNow - projectile->spawnTime).count() >= projectile->lifeTime) {

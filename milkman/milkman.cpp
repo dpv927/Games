@@ -32,19 +32,17 @@ int main(void) {
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    //milkman.Draw();
 
     for (int x = 0; x < 1800; x+=105) {
       for (int y = 0; y < 1000; y+=105) {
         DrawTexturePro(tex, Rectangle{0,0,105,105}, Rectangle{(float)x,(float)y,105,105},
       Vector2{0}, 0, WHITE);
-
+        DrawRectangleLines(x, y, 105, 105, BLACK);
       }
     }
 
     milkman.Draw();
     EndDrawing();
   }
-
   CloseWindow();
 }

@@ -1,10 +1,8 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include <memory>
 #include <raylib.h>
-#include <vector>
-#include "projectile.hpp"
+#include "entity.hpp"
 
 #define PlayerBaseSpeed 10
 #define PlayerNumSprites 6
@@ -12,20 +10,20 @@
 
 namespace Milkman {
 
-  struct Player {
-    Texture2D sprites;
-    Rectangle frame;
-    float speed;
-    float lerp;
-    Rectangle position;
-    Vector2 tPosition;
-    vector<unique_ptr<Projectile>> projectiles;
-    sysTime lastShot;
+  enum PlayerAnimations {
+    DOWN=0,
+    UP,
+    LEFT ,
+    RIGHT,
+    DIG_LEFT,
+    DIG_RIGHT
+  };
 
+  struct Player : public Entity {
     Player(char*, Vector2);
-    void Move(void);
-    void Shoot(void);
-    void Draw(void);
+    void Move(void)  override;
+    void Shoot(void) override;
+    void Draw(void)  override;
   };
 }
 

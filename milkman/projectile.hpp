@@ -23,6 +23,7 @@ namespace Milkman {
     
     virtual void ExecAi(void){};
     virtual void Draw(void){};
+    virtual ~Projectile() = default;
   };
 }
 
