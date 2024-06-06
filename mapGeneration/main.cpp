@@ -3,20 +3,23 @@
 #include <ctime>
 #include <random>
 #include <raylib.h>
+#include <raymath.h>
 #include <cmath>
 
+// ------- CONSTANTS DEFINITION ---------
 #define ROUNDM(n,m)(floor((float)(n+m-1)/m)*m)
-#define WindowWidth 1000
+#define WindowWidth 2000
 #define TileWidth 15
-#define NumRooms 100
-#define SpawnRadius 250
+#define NumRooms 50
+#define SpawnRadius 20
 
 constexpr int HalfWindow = WindowWidth>>1;
 constexpr int MinTileWidth = TileWidth*3;
-constexpr int MaxTileWidth = TileWidth*10;
+constexpr int MaxTileWidth = TileWidth*7;
 
 
- 
+// -------- FUNCTIONS ----------
+
 void DrawRoom(Rectangle* room) {
   int posx = room->x;
   int posy = room->y;
@@ -36,10 +39,9 @@ void GenerateRooms(Rectangle* rooms[], int centerX, int centerY) {
 
   double radius;
   double theta;
-  double u;
 
   for (int i=0; i<NumRooms; i++) {
-    radius = SpawnRadius * sqrt(real_dis(gen));
+    radius = TileWidth * SpawnRadius * sqrt(real_dis(gen));
     theta = real_dis(gen) * 2 * M_PI;
 
     rooms[i] = (Rectangle*) malloc(sizeof(Rectangle));
@@ -50,23 +52,73 @@ void GenerateRooms(Rectangle* rooms[], int centerX, int centerY) {
   }
 }
 
+bool IsAnyRoomOverlapped(Rectangle* rooms[]) {
+  Rectangle room;
+
+  for (int i = 0; i < NumRooms; i++) {
+    room = *rooms[i];
+
+    for (int j = 0; j < NumRooms; j++) {
+      if(i == j) continue;
+      if(CheckCollisionRecs(room, *rooms[j]))
+        return true;
+    } 
+  }
+  return false;
+}
+
+void SeparateRooms(Rectangle* rooms[]) {
+  Vector2 direction;
+  Rectangle room1, room2;
+
+  do {
+    for (int current = 0; current < NumRooms; current++) {
+      room1 = *rooms[current];
+      
+      for (int other = 0; other < NumRooms; other++) {
+        room2 = *rooms[other];
+
+        if(current == other || !CheckCollisionRecs(room1, room2))
+          continue; // Same or colliding Rooms
+ 
+        // Get the direction vector between both rooms
+        direction.x = (room2.x/2.0f) - (room1.x/2.0f);
+        direction.y = (room2.y/2.0f) - (room2.y/2.0f);
+        direction = Vector2Normalize(direction);
+        
+        // Move both rooms in opposite directions
+        room1.x += round(-direction.x)*TileWidth;
+        room1.y += round(-direction.y)*TileWidth;
+        room2.x += round(direction.x)*TileWidth;
+        room2.y += round(direction.y)*TileWidth;
+
+        *rooms[current] = room1;
+        *rooms[other] = room2;
+      }
+    }
+  }while (IsAnyRoomOverlapped(rooms));
+}
+
+
 int main(void) {
+
+  
 
   InitWindow(WindowWidth, WindowWidth, "Window Title");
   SetTargetFPS(10);
   DrawFPS(20, 20);
 
   Rectangle* rooms[NumRooms];
+  GenerateRooms(rooms, HalfWindow, HalfWindow);
+  SeparateRooms(rooms);
 
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(BLACK);
     DrawFPS(20, 20);
 
-    GenerateRooms(rooms, HalfWindow, HalfWindow);
-
     for(Rectangle* room : rooms) {
-      //DrawRectangle(room->x, room->y, room->width, room->height, BLUE);
+      // DrawRectangleRec(*room, WHITE);
       DrawRoom(room);
       DrawRectangleLines(room->x, room->y, room->width, room->height,WHITE);
     }
