@@ -9,27 +9,22 @@
 // ------- CONSTANTS DEFINITION ---------
 #define ROUNDM(n,m)(floor((float)(n+m-1)/m)*m)
 #define WindowWidth 2000
-#define TileWidth 15
-#define NumRooms 50
-#define SpawnRadius 20
+#define TileWidth 10
+#define NumRooms 20
+#define SpawnRadius 10
 
 constexpr int HalfWindow = WindowWidth>>1;
 constexpr int MinTileWidth = TileWidth*3;
-constexpr int MaxTileWidth = TileWidth*7;
+constexpr int MaxTileWidth = TileWidth*17;
 
 
-// -------- FUNCTIONS ----------
+// -------- FUNCTIONS ---------
 
-void DrawRoom(Rectangle* room) {
-  int posx = room->x;
-  int posy = room->y;
+void DrawRoom(Rectangle* room);
+void GenerateRooms(Rectangle* rooms[], int centerX, int centerY);
+bool IsAnyRoomOverlapped(Rectangle* rooms[]);
+void SeparateRooms(Rectangle* rooms[]);
 
-  for (posx = room->x; posx< (room->x + room->width); posx+=TileWidth) {
-    for (posy = room->y; posy < (room->y + room->height); posy+=TileWidth) {
-      DrawRectangleLines(posx, posy, TileWidth, TileWidth, BLUE);
-    }
-  }
-}
 
 void GenerateRooms(Rectangle* rooms[], int centerX, int centerY) {
   std::random_device rd;
@@ -57,7 +52,6 @@ bool IsAnyRoomOverlapped(Rectangle* rooms[]) {
 
   for (int i = 0; i < NumRooms; i++) {
     room = *rooms[i];
-
     for (int j = 0; j < NumRooms; j++) {
       if(i == j) continue;
       if(CheckCollisionRecs(room, *rooms[j]))
@@ -99,23 +93,34 @@ void SeparateRooms(Rectangle* rooms[]) {
   }while (IsAnyRoomOverlapped(rooms));
 }
 
+void DrawRoom(Rectangle* room) {
+  int posx = room->x;
+  int posy = room->y;
+
+  for (posx = room->x; posx< (room->x + room->width); posx+=TileWidth) {
+    for (posy = room->y; posy < (room->y + room->height); posy+=TileWidth) {
+      DrawRectangleLines(posx, posy, TileWidth, TileWidth, BLUE);
+    }
+  }
+}
 
 int main(void) {
-
-  
 
   InitWindow(WindowWidth, WindowWidth, "Window Title");
   SetTargetFPS(10);
   DrawFPS(20, 20);
 
   Rectangle* rooms[NumRooms];
-  GenerateRooms(rooms, HalfWindow, HalfWindow);
-  SeparateRooms(rooms);
+  //GenerateRooms(rooms, HalfWindow, HalfWindow);
+  //SeparateRooms(rooms);
 
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(BLACK);
     DrawFPS(20, 20);
+
+    GenerateRooms(rooms, HalfWindow, HalfWindow);
+    SeparateRooms(rooms);
 
     for(Rectangle* room : rooms) {
       // DrawRectangleRec(*room, WHITE);
