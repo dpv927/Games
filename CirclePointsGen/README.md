@@ -10,6 +10,12 @@ a window. This procedure is useful for the first phase of room generation in
 a game named TinyKeep, where rooms (rectangles) are generated within a given radius
 for later calculations.
 
+Because dungeons are composed of tiles, the points generated for the circle will not
+be calculated for the (x,y) coordinates of the window, but for the tile grid, unless
+the tile size is 1. Because of this, approximations are made for the points and some
+of the generated points may end up outside the circle, although these small errors 
+do not significantly affect the results in later steps of the TinyKeep algorithm.
+
 ## References
 
 - <a href="https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly">Generate a random point within a circle (uniformly)</a> 
