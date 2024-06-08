@@ -8,6 +8,6 @@ You can move the camera with the following keys:
 
 <div align="center">
 
-![image](https://github.com/dpv927/raylib/assets/113710742/e2664e29-e6ac-4042-9844-b16c5ee9397f)
+![image](https://github.com/dpv927/raylib/assets/113710742/f9378de8-8785-4b00-a736-f25f9a2aec8b)
 
 </div>
