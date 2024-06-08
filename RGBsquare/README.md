@@ -1,5 +1,6 @@
-<div>
+<div align="center">
 <h1>Square RGB</h1>
+<img src="https://github.com/dpv927/raylib/assets/113710742/e8d602dd-c056-4e0d-bee6-940f8865ef30" height="400">
 </div>
 
 ## About 
