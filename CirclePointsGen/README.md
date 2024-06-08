@@ -1,5 +1,6 @@
 <div align="center">
-<h1>Circle Points Generation</h1>
+  <h1>Circle Points Generation</h1>
+  <img src="https://github.com/dpv927/raylib/assets/113710742/cfafa3f1-9e58-4280-9867-32c3d5cd8a4d" alt="image" width="500" height="500">
 </div>
 
 ## About
