@@ -6,4 +6,4 @@ all:
 	clang++ $(SRCS) $(FLAGS) -o $(TARGET)
 
 clean: 
-	rm -rf *.o
+	rm -rf *.o $(TARGET)

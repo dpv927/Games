@@ -2,20 +2,19 @@
 #include <cstdlib>
 #include <ctime>
 #include <raylib.h>
-#include <raymath.h>
 #include <cmath>
 
 const int NumRooms    = 100;
 const int WindowWidth = 2000;
 const int MiddleW     = WindowWidth>>1; 
 const int demoFPS     = 10; 
-const int TileWidth   = 20;
+const int TileWidth   = 10;
 const int SpawnRadius = 10 * TileWidth;
+
 
 #define genRandom() ((float)(std::rand())/(float)(RAND_MAX))
 #define genRandomFrom(min,max) (std::rand()%(max - min + 1) + min)
 #define aproxCoordinate(n) (round((float)(n)/TileWidth)*TileWidth)
-
 
 
 void GenerateRooms(Rectangle rooms[]) {
@@ -40,8 +39,8 @@ bool separateRooms(Rectangle rooms[]) {
     const float mrw_i = rooms[i].width/2.0f;
     const float mrh_i = rooms[i].height/2.0f;
 
-    for (int j = i + 1; j < NumRooms; j++) {
-      if (CheckCollisionRecs(rooms[i], rooms[j])) {
+    for (int j = 0; j < NumRooms; j++) {
+      if (i != j && CheckCollisionRecs(rooms[i], rooms[j])) {
         const float mrw_j = rooms[j].width/2.0f;
         const float mrh_j = rooms[j].height/2.0f;
 
@@ -94,6 +93,7 @@ int main(void) {
 
   InitWindow(WindowWidth, WindowWidth, "Window Title");
   SetTargetFPS(demoFPS);
+  std::srand(std::time(NULL));
 
   Rectangle rooms[NumRooms];
   Vector2 target = {0,0};
@@ -105,16 +105,14 @@ int main(void) {
     .zoom = 1,
   };
   
-  std::srand(std::time(0));
   GenerateRooms(rooms);
+  while(separateRooms(rooms));
   
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(BLACK);
     DrawFPS(20, 20);
 
-    separateRooms(rooms);
-    
     /* Move the camera */
     if(IsKeyDown(KEY_W))
       camera.target.y-=50;
