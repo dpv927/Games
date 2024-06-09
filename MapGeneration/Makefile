@@ -1,6 +1,6 @@
 SRCS=main.cpp
 TARGET=exec
-FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -Wall -Werror
+FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 all:
 	clang++ $(SRCS) $(FLAGS) -o $(TARGET)
