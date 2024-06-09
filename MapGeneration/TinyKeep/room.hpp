@@ -11,7 +11,7 @@ namespace TinyKeep {
     float y;
     float width;
     float height;
-    int area;
+    bool mainRoom;
 
     bool isCollidingWidth(Room& other);
     void drawRoom(int tileSize);

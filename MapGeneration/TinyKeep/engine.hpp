@@ -36,7 +36,7 @@ namespace TinyKeep {
 
     void generateRooms(Room rooms[]);
     bool separateRooms(Room rooms[]);
-    void selectRooms(Room rooms[]);
+    void selectRooms(Room rooms[], float threshold);
   };
 }
 #endif

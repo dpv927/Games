@@ -9,9 +9,11 @@ namespace TinyKeep {
   }
 
   void Room::drawRoom(int tileSize) {
+    Color color = (this->mainRoom)? RED : BLUE;
+
     for (int posx = this->x; posx< (this->x + this->width); posx+=tileSize)
       for (int posy = this->y; posy < (this->y + this->height); posy+=tileSize)
-        DrawRectangleLines(posx, posy, tileSize, tileSize, BLUE);
+        DrawRectangleLines(posx, posy, tileSize, tileSize, color);
     DrawRectangleLines(this->x, this->y, this->width, this->height, WHITE);
   }
 }

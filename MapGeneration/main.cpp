@@ -7,7 +7,7 @@ const int NumRooms    = 100;
 const int WindowWidth = 2000;
 const int MiddleW     = WindowWidth>>1; 
 const int demoFPS     = 10; 
-const int TileWidth   = 20;
+const int TileWidth   = 10;
 const int SpawnRadius = 20 * TileWidth;
 
 int main(void) {
@@ -32,7 +32,9 @@ int main(void) {
   camera.zoom = 1;
 
   engine.generateRooms(rooms);
-    
+  while(engine.separateRooms(rooms));
+  engine.selectRooms(rooms, 1.25f);
+
   while (!WindowShouldClose()) {
     BeginDrawing();
     ClearBackground(BLACK);
@@ -47,8 +49,6 @@ int main(void) {
     if(IsKeyDown(KEY_A))
       camera.target.x-=50;
     BeginMode2D(camera);
-
-    engine.separateRooms(rooms);
 
     for (TinyKeep::Room room : rooms) {
       room.drawRoom(TileWidth);

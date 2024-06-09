@@ -40,7 +40,7 @@ namespace TinyKeep {
       room.y = aproxCoordinate(rndRadius * sin(angle) + origin.y, tileWidth);
       room.width  = genRandomFrom(Engine::rminTilesW, Engine::rmaxTilesW) * tileWidth;
       room.height = genRandomFrom(Engine::rminTilesH, Engine::rmaxTilesH) * tileWidth;
-      room.area = room.width * room.height;
+      room.mainRoom = false;
     }
   }
 
@@ -99,7 +99,23 @@ namespace TinyKeep {
     return rooms_overlap;  
   } 
 
-  void Engine::selectRooms(Room rooms[]) {
-  
+  void Engine::selectRooms(Room rooms[], float threshold) {
+    float avgWidth  = 0.0f;
+    float avgHeight = 0.0f;
+
+    // Get the average area of a room;
+    for (int i = 0; i < numRooms; i++) {
+      avgWidth  += rooms[i].width;
+      avgHeight += rooms[i].height;
+    }
+
+    avgWidth  = avgWidth/numRooms  * threshold;
+    avgHeight = avgHeight/numRooms * threshold;
+
+    // Select the mai rooms (the rooms with)
+    // a greater area than the average 
+    for (int i = 0; i < numRooms; i++)
+      if((rooms[i].width >= avgWidth) && (rooms[i].height >= avgHeight))
+        rooms[i].mainRoom = true;
   }
 }
