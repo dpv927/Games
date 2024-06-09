@@ -1,14 +1,19 @@
 #ifndef TINYKEEP_ROOM
+#define TINYKEEP_ROOM
+
 #include<raylib.h>
 
 namespace TinyKeep {
 
   struct Room {
-    Rectangle shape;
-    Vector2 center;
+  public:
+    float x;
+    float y;
+    float width;
+    float height;
     int area;
 
-    Room(int x, int y, int width, int height);
+    bool isCollidingWidth(Room& other);
     void drawRoom(int tileSize);
   };
 }

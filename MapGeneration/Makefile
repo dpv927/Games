@@ -1,9 +1,18 @@
-SRCS=main.cpp
-TARGET=exec
-FLAGS=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+CXX = clang++
+CXXFLAGS = -c -Wall -Werror -pedantic -fdiagnostics-show-line-numbers
+LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+SRCS = $(shell find . -name '*.cpp')
+OBJS = $(SRCS:.cpp=.o)
+TARGET = exec
 
-all:
-	clang++ $(SRCS) $(FLAGS) -o $(TARGET)
+all: $(TARGET)
 
-clean: 
-	rm -rf *.o $(TARGET)
+$(TARGET): $(OBJS)
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+
