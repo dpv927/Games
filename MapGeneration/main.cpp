@@ -2,6 +2,7 @@
 #include <ctime>
 #include <raylib.h>
 #include "TinyKeep/engine.hpp"
+#include "TinyKeep/room.hpp"
 
 const int NumRooms    = 100;
 const int WindowWidth = 2000;

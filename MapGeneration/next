@@ -1,0 +1,5 @@
+
+
+cambiar "rooms" de array a std::vector
+poner "rooms" como propiedad de la clase Engine??
+siguiente paso de la implementacion
