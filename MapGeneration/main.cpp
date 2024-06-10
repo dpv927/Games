@@ -9,7 +9,7 @@ const int NumRooms    {100};
 const int WindowWidth {2000};
 const int MiddleW     {WindowWidth>>1}; 
 const int demoFPS     {10}; 
-const int TileWidth   {10};
+const int TileWidth   {20};
 const int SpawnRadius {20 * TileWidth};
 
 int main(void) {
