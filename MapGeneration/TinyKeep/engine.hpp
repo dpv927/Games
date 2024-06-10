@@ -2,6 +2,7 @@
 #define TINYKEEP_ENGINE
 
 #include <raylib.h>
+#include <vector>
 #include "room.hpp"
 
 #define DEF_MIN_TILESW 2
@@ -34,9 +35,9 @@ namespace TinyKeep {
     void setNumRooms(int rooms);
     void setSpawnRadius(int radius);
 
-    void generateRooms(Room rooms[]);
-    bool separateRooms(Room rooms[]);
-    void selectRooms(Room rooms[], float threshold);
+    void generateRooms(std::vector<Room>& rooms);
+    bool separateRooms(std::vector<Room>& rooms);
+    void selectRooms(std::vector<Room>& rooms, float threshold);
   };
 }
 #endif

@@ -1,15 +1,16 @@
 #include <cstdlib>
 #include <ctime>
 #include <raylib.h>
+#include <vector>
 #include "TinyKeep/engine.hpp"
 #include "TinyKeep/room.hpp"
 
-const int NumRooms    = 100;
-const int WindowWidth = 2000;
-const int MiddleW     = WindowWidth>>1; 
-const int demoFPS     = 10; 
-const int TileWidth   = 10;
-const int SpawnRadius = 20 * TileWidth;
+const int NumRooms    {100};
+const int WindowWidth {2000};
+const int MiddleW     {WindowWidth>>1}; 
+const int demoFPS     {10}; 
+const int TileWidth   {10};
+const int SpawnRadius {20 * TileWidth};
 
 int main(void) {
 
@@ -17,9 +18,10 @@ int main(void) {
   SetTargetFPS(demoFPS);
   std::srand(std::time(NULL));
 
-  // Init the engine
-  TinyKeep::Room rooms[NumRooms];
+  // Init the engine 
+  std::vector<TinyKeep::Room> rooms(NumRooms);
   TinyKeep::Engine engine;
+ 
   engine.setOrigin(MiddleW, MiddleW);
   engine.setNumRooms(NumRooms);
   engine.setTileWidth(TileWidth);

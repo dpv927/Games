@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdlib>
+#include <vector>
 #include "engine.hpp"
 #include "../utils.hpp"
 
@@ -27,15 +28,14 @@ namespace TinyKeep {
     this->SpawnRadius = radius;
   }
 
-  void Engine::generateRooms(Room rooms[]) {
+  void Engine::generateRooms(std::vector<Room>& rooms) {
     float rndRadius;
     float angle;
 
-    for (int i = 0; i < numRooms; i++) {
-      Room& room = rooms[i];
+    for (Room& room : rooms) {
       rndRadius = SpawnRadius * sqrt(genRandom());
-      angle = genRandom()*2.0f*M_PI;
-
+      angle = genRandom() * 2.0f * M_PI;
+      
       room.x = aproxCoordinate(rndRadius * cos(angle) + origin.x, tileWidth);
       room.y = aproxCoordinate(rndRadius * sin(angle) + origin.y, tileWidth);
       room.width  = genRandomFrom(Engine::rminTilesW, Engine::rmaxTilesW) * tileWidth;
@@ -44,21 +44,21 @@ namespace TinyKeep {
     }
   }
 
-  bool Engine::separateRooms(Room rooms[]) {
+  bool Engine::separateRooms(std::vector<Room>& rooms) {
     bool rooms_overlap = false;
 
-    for (int i = 0; i < numRooms; i++) {
-      const float mrw_i = rooms[i].width/2.0f;
-      const float mrh_i = rooms[i].height/2.0f;
-      Room& actual = rooms[i];
+    for (auto it = rooms.begin(); it != rooms.end(); it++) {
+      Room& actual = *it;
+      const float mrw_i = actual.width/2.0f;
+      const float mrh_i = actual.height/2.0f;
 
-      for (int j = i + 1; j < numRooms; j++) {
-        Room& other = rooms[j];
+      for (auto jt = (it + 1); jt != rooms.end(); jt++) {
+        Room& other = *jt;
 
         if (actual.isCollidingWidth(other)){
-          const float mrw_j = rooms[j].width/2.0f;
-          const float mrh_j = rooms[j].height/2.0f;
-
+          const float mrw_j = other.width/2.0f;
+          const float mrh_j = other.height/2.0f;
+          
           // Differential betteen both rooms center 
           // coordinates
           const float dx = (other.x + mrw_j) - (actual.x + mrw_i);
@@ -99,14 +99,14 @@ namespace TinyKeep {
     return rooms_overlap;  
   } 
 
-  void Engine::selectRooms(Room rooms[], float threshold) {
+  void Engine::selectRooms(std::vector<Room>& rooms, float threshold) {
     float avgWidth  = 0.0f;
     float avgHeight = 0.0f;
 
     // Get the average area of a room;
-    for (int i = 0; i < numRooms; i++) {
-      avgWidth  += rooms[i].width;
-      avgHeight += rooms[i].height;
+    for (Room& room : rooms) {
+      avgWidth  += room.width;
+      avgHeight += room.height;
     }
 
     avgWidth  = avgWidth/numRooms  * threshold;
@@ -114,8 +114,8 @@ namespace TinyKeep {
 
     // Select the mai rooms (the rooms with)
     // a greater area than the average 
-    for (int i = 0; i < numRooms; i++)
-      if((rooms[i].width >= avgWidth) && (rooms[i].height >= avgHeight))
-        rooms[i].mainRoom = true;
+    for (Room& room : rooms)
+      if((room.width >= avgWidth) && (room.height >= avgHeight))
+        room.mainRoom = true;
   }
 }
