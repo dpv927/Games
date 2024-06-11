@@ -1,6 +1,5 @@
 #include <cmath>
 #include <cstdlib>
-#include <numeric>
 #include <vector>
 #include "engine.hpp"
 #include "../utils.hpp"
@@ -119,4 +118,5 @@ namespace TinyKeep {
       if((room.width >= avgWidth) && (room.height >= avgHeight))
         room.mainRoom = true;
   }
+
 }
