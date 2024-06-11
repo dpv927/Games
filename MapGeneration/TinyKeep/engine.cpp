@@ -6,38 +6,78 @@
 
 namespace TinyKeep {
 
-  int Engine::rminTilesW {DEF_MIN_TILESW};
-  int Engine::rmaxTilesW {DEF_MAX_TILESW};
-  int Engine::rminTilesH {DEF_MIN_TILESH};
-  int Engine::rmaxTilesH {DEF_MAX_TILESH};
+  Engine* Engine::instance = nullptr;
+  
 
-  void Engine::setOrigin(int x, int y) {
+  Engine::Engine(void) {
+    // Room sides tiles number
+    this->rminTilesW = DEF_MIN_TILESW;
+    this->rmaxTilesW = DEF_MAX_TILESW;
+    this->rminTilesH = DEF_MIN_TILESH;
+    this->rmaxTilesH = DEF_MAX_TILESH;
+  
+    // Generator propierties
+    this->origin.x    = DEF_ORIGINXY;
+    this->origin.y    = DEF_ORIGINXY;
+    this->tileWidth   = DEF_TILEW;
+    this->numRooms    = DEF_NUMROOMS;
+    this->spawnRadius = DEF_SPAWNRAD;
+  }
+
+  Engine* Engine::getInstance(void) {
+    if(instance == nullptr) 
+      instance = new Engine();
+    return instance;;
+  }
+
+  Engine* Engine::setOrigin(const int x, const int y) {
     this->origin.x = x;
     this->origin.y = y;
+    return this;
   }
 
-  void Engine::setTileWidth(int width) {
+  Engine* Engine::setRoomMinTilesWidth(const int n) {
+    this->rminTilesW = n;
+    return this;;
+  }
+
+  Engine* Engine::setRoomMaxTilesWidth(const int n) {
+    this->rmaxTilesW = n;
+    return this;
+  }
+
+  Engine* Engine::setRoomMinTilesHeight(const int n) {
+    this->rminTilesH = n;
+    return this;
+  }
+
+  Engine* Engine::setRoomMaxTilesHeight(const int n) {
+    this->rmaxTilesH = n;
+    return this;
+  }
+
+  Engine* Engine::setTileWidth(const int width) {
     this->tileWidth = width;
+    return this;;
   }
 
-  void Engine::setNumRooms(int rooms) {
+  Engine* Engine::setNumRooms(const int rooms) {
     this->numRooms = rooms;
+    return this;
   }
 
-  void Engine::setSpawnRadius(int radius) {
-    this->SpawnRadius = radius;
+  Engine* Engine::setSpawnRadius(const int radius) {
+    this->spawnRadius = radius;
+    return this;
   }
 
   void Engine::generateRooms(std::vector<Room>& rooms) {
-    float rndRadius;
-    float angle;
-
     for (Room& room : rooms) {
-      rndRadius = SpawnRadius * sqrt(genRandom());
-      angle = genRandom() * 2.0f * M_PI;
+      const double rndRadius = spawnRadius * std::sqrt(genRandom());
+      const double angle = genRandom() * 2.0 * M_PI;
       
-      room.x = aproxCoordinate(rndRadius * cos(angle) + origin.x, tileWidth);
-      room.y = aproxCoordinate(rndRadius * sin(angle) + origin.y, tileWidth);
+      room.x = aproxCoordinate(rndRadius * std::cos(angle) + origin.x, tileWidth);
+      room.y = aproxCoordinate(rndRadius * std::sin(angle) + origin.y, tileWidth);
       room.width  = genRandomFrom(Engine::rminTilesW, Engine::rmaxTilesW) * tileWidth;
       room.height = genRandomFrom(Engine::rminTilesH, Engine::rmaxTilesH) * tileWidth;
       room.mainRoom = false;
@@ -66,8 +106,8 @@ namespace TinyKeep {
 
           // Instead of overlap, they are overlap/2 to avoid doing 
           // the same operation twice at the 'if's below.
-          const float overlapX = ((mrw_i + mrw_j) - fabs(dx))/2.0f;
-          const float overlapY = ((mrh_i + mrh_j) - fabs(dy))/2.0f;
+          const float overlapX = ((mrw_i + mrw_j) - std::fabs(dx))/2.0f;
+          const float overlapY = ((mrh_i + mrh_j) - std::fabs(dy))/2.0f;
 
           if (overlapX < overlapY) {
             if (dx > 0) {
@@ -99,7 +139,7 @@ namespace TinyKeep {
     return rooms_overlap;  
   } 
 
-  void Engine::selectRooms(std::vector<Room>& rooms, float threshold) {
+  void Engine::selectRooms(std::vector<Room>& rooms, const float threshold) {
     double avgWidth  {0};
     double avgHeight {0};
 
@@ -118,5 +158,4 @@ namespace TinyKeep {
       if((room.width >= avgWidth) && (room.height >= avgHeight))
         room.mainRoom = true;
   }
-
 }

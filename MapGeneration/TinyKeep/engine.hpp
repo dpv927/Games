@@ -10,34 +10,43 @@
 #define DEF_MIN_TILESH 2
 #define DEF_MAX_TILESH 11
 
+#define DEF_ORIGINXY 0
+#define DEF_TILEW    10
+#define DEF_NUMROOMS 100
+#define DEF_SPAWNRAD 20
+
 namespace TinyKeep {
 
   struct Engine {
   private:
-    static int rminTilesW;
-    static int rmaxTilesW;
-    static int rminTilesH;
-    static int rmaxTilesH;
+    int rminTilesW;
+    int rmaxTilesW;
+    int rminTilesH;
+    int rmaxTilesH;
     
     Vector2 origin;
     int tileWidth;
     int numRooms;
-    int SpawnRadius;
+    int spawnRadius;
+    
+    static Engine* instance;
+    Engine(void);
 
   public:
-    static int setRoomMinTilesWidth(int n);
-    static int setRoomMaxTilesWidth(int n);
-    static int setRoomMinTilesHeight(int n);
-    static int setRoomMaxTilesHeight(int n);
+    static Engine* getInstance();
+    Engine* setRoomMinTilesWidth(const int n);
+    Engine* setRoomMaxTilesWidth(const int n);
+    Engine* setRoomMinTilesHeight(const int n);
+    Engine* setRoomMaxTilesHeight(const int n);
 
-    void setOrigin(int x, int y);
-    void setTileWidth(int x);
-    void setNumRooms(int rooms);
-    void setSpawnRadius(int radius);
+    Engine* setOrigin(const int x, const int y);
+    Engine* setTileWidth(const int x);
+    Engine* setNumRooms(const int rooms);
+    Engine* setSpawnRadius(const int radius);
 
     void generateRooms(std::vector<Room>& rooms);
     bool separateRooms(std::vector<Room>& rooms);
-    void selectRooms(std::vector<Room>& rooms, float threshold);
+    void selectRooms(std::vector<Room>& rooms, const float threshold);
   };
 }
 #endif

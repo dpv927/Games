@@ -20,12 +20,15 @@ int main(void) {
 
   // Init the engine 
   std::vector<TinyKeep::Room> rooms(NumRooms);
-  TinyKeep::Engine engine;
- 
-  engine.setOrigin(MiddleW, MiddleW);
-  engine.setNumRooms(NumRooms);
-  engine.setTileWidth(TileWidth);
-  engine.setSpawnRadius(SpawnRadius);
+  TinyKeep::Engine* engine = TinyKeep::Engine::getInstance()
+    ->setOrigin(MiddleW, MiddleW)
+    ->setNumRooms(NumRooms)
+    ->setTileWidth(TileWidth)
+    ->setSpawnRadius(SpawnRadius)
+    ->setRoomMaxTilesWidth(11)
+    ->setRoomMinTilesWidth(2)
+    ->setRoomMaxTilesHeight(11)
+    ->setRoomMinTilesHeight(2);
 
   // Create a 2D Camera
   Camera2D camera;
@@ -34,9 +37,9 @@ int main(void) {
   camera.rotation = 0;
   camera.zoom = 1;
 
-  engine.generateRooms(rooms);
-  while(engine.separateRooms(rooms));
-  engine.selectRooms(rooms, 1.25f);
+  engine->generateRooms(rooms);
+  while(engine->separateRooms(rooms));
+  engine->selectRooms(rooms, 1.25f);
 
   while (!WindowShouldClose()) {
     BeginDrawing();
