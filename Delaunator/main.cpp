@@ -47,15 +47,15 @@ int main(void) {
       DrawLine( // Draw line from vertex V1 to vertex V2 
         d.coords[2 * d.triangles[i]], d.coords[2 * d.triangles[i] + 1],
         d.coords[2 * d.triangles[i + 1]], d.coords[2 * d.triangles[i + 1] + 1],
-        GREEN);
+        BLUE);
       DrawLine( // Draw line from vertex V1 to vertex V3 
         d.coords[2 * d.triangles[i]], d.coords[2 * d.triangles[i] + 1],
         d.coords[2 * d.triangles[i + 2]], d.coords[2 * d.triangles[i + 2] + 1],
-        GREEN);
+        BLUE);
       DrawLine( // Draw line from vertex V2 to vertex V3 
         d.coords[2 * d.triangles[i + 1]], d.coords[2 * d.triangles[i + 1] + 1],
         d.coords[2 * d.triangles[i + 2]], d.coords[2 * d.triangles[i + 2] + 1],
-        GREEN);
+        BLUE);
     }
     EndDrawing();
   }
