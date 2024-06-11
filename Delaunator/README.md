@@ -1,8 +1,6 @@
-# Delaunator
-
 <div align="center">
 <h1>Delaunator</h1>
-<img src="" height="400">
+<img src="https://github.com/dpv927/raylib/assets/113710742/747a03c2-9cb6-45ed-9371-9fb406eed958" height="400">
 </div>
 
 ## About 
