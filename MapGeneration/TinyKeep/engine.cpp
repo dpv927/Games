@@ -1,7 +1,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
-#include <iostream>
 #include "engine.hpp"
 #include "../utils.hpp"
 
@@ -161,7 +160,6 @@ namespace TinyKeep {
         room.middley = room.y + room.height/2.0;
         room.mainRoom = true;
         room.id = idCount++;
-        std::cout << room.id << " " << idCount << std::endl;
       }
     }
   }
