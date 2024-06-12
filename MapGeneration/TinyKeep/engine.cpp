@@ -1,13 +1,13 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
+#include <iostream>
 #include "engine.hpp"
 #include "../utils.hpp"
 
 namespace TinyKeep {
 
   Engine* Engine::instance = nullptr;
-  
 
   Engine::Engine(void) {
     // Room sides tiles number
@@ -142,6 +142,7 @@ namespace TinyKeep {
   void Engine::selectRooms(std::vector<Room>& rooms, const float threshold) {
     double avgWidth  {0};
     double avgHeight {0};
+    long idCount {0};
 
     // Get the average area of a room;
     for (const Room& room : rooms) {
@@ -154,8 +155,14 @@ namespace TinyKeep {
 
     // Select the mai rooms (the rooms with)
     // a greater area than the average 
-    for (Room& room : rooms)
-      if((room.width >= avgWidth) && (room.height >= avgHeight))
+    for (Room& room : rooms) {
+      if((room.width >= avgWidth) && (room.height >= avgHeight)) {
+        room.middlex = room.x + room.width/2,0;
+        room.middley = room.y + room.height/2.0;
         room.mainRoom = true;
+        room.id = idCount++;
+        std::cout << room.id << " " << idCount << std::endl;
+      }
+    }
   }
 }

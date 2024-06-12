@@ -8,13 +8,13 @@
 const int NumRooms    {100};
 const int WindowWidth {2000};
 const int MiddleW     {WindowWidth>>1}; 
-const int demoFPS     {10}; 
+const int demoFPS     {60}; 
 const int TileWidth   {20};
 const int SpawnRadius {20 * TileWidth};
 
 int main(void) {
 
-  InitWindow(WindowWidth, WindowWidth, "Window Title");
+  InitWindow(WindowWidth, WindowWidth, "");
   SetTargetFPS(demoFPS);
   std::srand(std::time(NULL));
 
@@ -47,13 +47,13 @@ int main(void) {
 
     /* Move the camera */
     if(IsKeyDown(KEY_W))
-      camera.target.y-=50;
+      camera.target.y-=25;
     if(IsKeyDown(KEY_S))
-      camera.target.y+=50;
+      camera.target.y+=25;
     if(IsKeyDown(KEY_D))
-      camera.target.x+=50;
+      camera.target.x+=25;
     if(IsKeyDown(KEY_A))
-      camera.target.x-=50;
+      camera.target.x-=25;
     BeginMode2D(camera);
 
     for (TinyKeep::Room room : rooms) {

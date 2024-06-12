@@ -6,12 +6,14 @@
 namespace TinyKeep {
 
   struct Room {
-  public:
     float x;
     float y;
     float width;
     float height;
     bool mainRoom;
+    double middlex;
+    double middley;
+    long id;
 
     bool isCollidingWidth(Room& other);
     void drawRoom(int tileSize);
