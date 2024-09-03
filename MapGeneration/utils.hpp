@@ -1,15 +1,20 @@
-#ifndef UTILS
+#include <cstdlib>
 
-/* Genertates a floating point random number between 0 and 1. */
-#define genRandom() (static_cast<float>(std::rand()))/(static_cast<float>(RAND_MAX))
+#ifndef _UTILS
+#define _UTILS
 
-/* Genertates a integer between the parameter 'n' and 'm',
- * both limits included. */
-#define genRandomFrom(min,max) (std::rand()%(max - min + 1) + min)
+namespace utils {
 
-/* Aproximates the parameter "n" (the value of a coordinate), to
- * the nearest multiple of "m", usually the width in pixels of a
- * map tile width. */ 
-#define aproxCoordinate(n,m) (round((static_cast<float>(n))/m)*m)
+  /* Genertates a float random number between 0 and 1.
+   * std::rand must be initialized. */
+  inline float gen_random() {
+    return static_cast<float>(std::rand())/static_cast<float>(RAND_MAX);
+  }
 
+  /* Genertates a integer between the parameter 'n' and 'm',
+  * both limits included. */
+  inline int gen_random_from(int min, int max) {
+    return std::rand()%(max - min + 1) + min;
+  }
+}
 #endif

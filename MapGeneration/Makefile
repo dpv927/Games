@@ -1,5 +1,5 @@
 CXX = clang++
-CXXFLAGS = -c -Wall -Werror -pedantic -fdiagnostics-show-line-numbers
+CXXFLAGS = -c -Wall -pedantic -fdiagnostics-show-line-numbers
 LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 SRCS = $(shell find . -name '*.cpp')
 OBJS = $(SRCS:.cpp=.o)

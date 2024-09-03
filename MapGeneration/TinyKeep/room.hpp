@@ -1,6 +1,7 @@
 #ifndef TINYKEEP_ROOM
 #define TINYKEEP_ROOM
 
+#include <cstddef>
 #include<raylib.h>
 
 namespace TinyKeep {
@@ -11,9 +12,7 @@ namespace TinyKeep {
     float width;
     float height;
     bool mainRoom;
-    double middlex;
-    double middley;
-    long id;
+    std::size_t id;
 
     bool isCollidingWidth(Room& other);
     void drawRoom(int tileSize);

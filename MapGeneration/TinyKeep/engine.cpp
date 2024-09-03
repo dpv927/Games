@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <vector>
 #include "engine.hpp"
@@ -7,138 +8,104 @@
 namespace TinyKeep {
 
   Engine* Engine::instance = nullptr;
-
-  Engine::Engine(void) {
-    // Room sides tiles number
-    this->rminTilesW = DEF_MIN_TILESW;
-    this->rmaxTilesW = DEF_MAX_TILESW;
-    this->rminTilesH = DEF_MIN_TILESH;
-    this->rmaxTilesH = DEF_MAX_TILESH;
+  Engine::Engine(){}
   
-    // Generator propierties
-    this->origin.x    = DEF_ORIGINXY;
-    this->origin.y    = DEF_ORIGINXY;
-    this->tileWidth   = DEF_TILEW;
-    this->numRooms    = DEF_NUMROOMS;
-    this->spawnRadius = DEF_SPAWNRAD;
-  }
-
   Engine* Engine::getInstance(void) {
     if(instance == nullptr) 
       instance = new Engine();
     return instance;;
   }
 
-  Engine* Engine::setOrigin(const int x, const int y) {
-    this->origin.x = x;
-    this->origin.y = y;
-    return this;
+  inline float aprox_coordinate(float n, float m) {
+   return round((static_cast<float>(n))/m)*m;
   }
 
-  Engine* Engine::setRoomMinTilesWidth(const int n) {
-    this->rminTilesW = n;
-    return this;;
-  }
+  void Engine::generateRooms(
+        const uint16_t room_width_min,
+        const uint16_t room_width_max, 
+        const uint16_t room_height_min,
+        const uint16_t room_height_max,
+        const float origin_x,
+        const float origin_y,
+        const uint16_t tile_width,
+        const uint32_t num_rooms,
+        const uint32_t spawn_radius) {
 
-  Engine* Engine::setRoomMaxTilesWidth(const int n) {
-    this->rmaxTilesW = n;
-    return this;
-  }
-
-  Engine* Engine::setRoomMinTilesHeight(const int n) {
-    this->rminTilesH = n;
-    return this;
-  }
-
-  Engine* Engine::setRoomMaxTilesHeight(const int n) {
-    this->rmaxTilesH = n;
-    return this;
-  }
-
-  Engine* Engine::setTileWidth(const int width) {
-    this->tileWidth = width;
-    return this;;
-  }
-
-  Engine* Engine::setNumRooms(const int rooms) {
-    this->numRooms = rooms;
-    return this;
-  }
-
-  Engine* Engine::setSpawnRadius(const int radius) {
-    this->spawnRadius = radius;
-    return this;
-  }
-
-  void Engine::generateRooms(std::vector<Room>& rooms) {
-    for (Room& room : rooms) {
-      const double rndRadius = spawnRadius * std::sqrt(genRandom());
-      const double angle = genRandom() * 2.0 * M_PI;
+    rooms.reserve(num_rooms);
+    
+    for(uint32_t i = 0; i < num_rooms; i++) {
+      const float rndRadius = spawn_radius * std::sqrt(utils::gen_random());
+      const float angle = utils::gen_random() * 2.0 * M_PI;
       
-      room.x = aproxCoordinate(rndRadius * std::cos(angle) + origin.x, tileWidth);
-      room.y = aproxCoordinate(rndRadius * std::sin(angle) + origin.y, tileWidth);
-      room.width  = genRandomFrom(Engine::rminTilesW, Engine::rmaxTilesW) * tileWidth;
-      room.height = genRandomFrom(Engine::rminTilesH, Engine::rmaxTilesH) * tileWidth;
+      Room room;
+      room.x = aprox_coordinate(rndRadius * std::cos(angle) + origin_x, tile_width);
+      room.y = aprox_coordinate(rndRadius * std::sin(angle) + origin_y, tile_width);
+      room.width  = utils::gen_random_from(room_width_min, room_width_max) * tile_width;
+      room.height = utils::gen_random_from(room_height_min, room_height_max) * tile_width;
       room.mainRoom = false;
+      this->rooms.push_back(room);
     }
   }
 
-  bool Engine::separateRooms(std::vector<Room>& rooms) {
-    bool rooms_overlap {false};
+  void Engine::separateRooms(uint16_t tile_width) {
+    bool rooms_overlap;
 
-    for (auto it = rooms.begin(); it != rooms.end(); it++) {
-      Room& actual {*it};
-      const float mrw_i {actual.width/2.0f};
-      const float mrh_i {actual.height/2.0f};
+    do {
+      rooms_overlap = false;
 
-      for (auto jt = (it + 1); jt != rooms.end(); jt++) {
-        Room& other {*jt};
+      for (auto it = rooms.begin(); it != rooms.end(); it++) {
+        Room& actual {*it};
+        const float mrw_i {actual.width/2.0f};
+        const float mrh_i {actual.height/2.0f};
 
-        if (actual.isCollidingWidth(other)){
-          const float mrw_j {other.width/2.0f};
-          const float mrh_j {other.height/2.0f};
+        for (auto jt = (it + 1); jt != rooms.end(); jt++) {
+          Room& other {*jt};
+
+          if (actual.isCollidingWidth(other)){
+            const float mrw_j {other.width/2.0f};
+            const float mrh_j {other.height/2.0f};
           
-          // Differential betteen both rooms center 
-          // coordinates
-          const float dx {(other.x + mrw_j) - (actual.x + mrw_i)};
-          const float dy {(other.y + mrh_j) - (actual.y + mrh_i)};
+            // Differential betteen both rooms center 
+            // coordinates
+            const float dx {(other.x + mrw_j) - (actual.x + mrw_i)};
+            const float dy {(other.y + mrh_j) - (actual.y + mrh_i)};
 
-          // Instead of overlap, they are overlap/2 to avoid doing 
-          // the same operation twice at the 'if's below.
-          const float overlapX = ((mrw_i + mrw_j) - std::fabs(dx))/2.0f;
-          const float overlapY = ((mrh_i + mrh_j) - std::fabs(dy))/2.0f;
+            // Instead of overlap, they are overlap/2 to avoid doing 
+            // the same operation twice at the 'if's below.
+            const float overlapX = ((mrw_i + mrw_j) - std::fabs(dx))/2.0f;
+            const float overlapY = ((mrh_i + mrh_j) - std::fabs(dy))/2.0f;
 
-          if (overlapX < overlapY) {
-            if (dx > 0) {
-              actual.x -= overlapX;
-              other.x += overlapX;
+            if (overlapX < overlapY) {
+              if (dx > 0) {
+                actual.x -= overlapX;
+                other.x += overlapX;
+              } else {
+                actual.x += overlapX;
+                other.x -= overlapX;
+              }
             } else {
-              actual.x += overlapX;
-              other.x -= overlapX;
+              if (dy > 0) {
+                actual.y -= overlapY;
+                other.y += overlapY;
+              } else {
+                actual.y += overlapY;
+                other.y -= overlapY;
+              }
             }
-          } else {
-            if (dy > 0) {
-              actual.y -= overlapY;
-              other.y += overlapY;
-            } else {
-              actual.y += overlapY;
-              other.y -= overlapY;
-            }
+
+            // Adjust the coordinates to the grid
+            actual.x = aprox_coordinate(actual.x, tile_width);
+            actual.y = aprox_coordinate(actual.y, tile_width);
+            other.x  = aprox_coordinate(other.x,  tile_width);
+            other.y  = aprox_coordinate(other.y,  tile_width);
+            rooms_overlap = true;
           }
-
-          // Adjust the coordinates to the grid
-          actual.x = aproxCoordinate(actual.x, tileWidth);
-          actual.y = aproxCoordinate(actual.y, tileWidth);
-          other.x  = aproxCoordinate(other.x,  tileWidth);
-          other.y  = aproxCoordinate(other.y,  tileWidth);
-          rooms_overlap = true;
         }
       }
-    }
-    return rooms_overlap;  
+    } while(rooms_overlap);
   } 
 
-  void Engine::selectRooms(std::vector<Room>& rooms, const float threshold) {
+  void Engine::selectRooms(const float threshold) {
     double avgWidth  {0};
     double avgHeight {0};
     long idCount {0};
@@ -149,17 +116,16 @@ namespace TinyKeep {
       avgHeight += room.height;
     }
 
-    avgWidth  = avgWidth/numRooms  * threshold;
-    avgHeight = avgHeight/numRooms * threshold;
+    avgWidth  = avgWidth/rooms.size()  * threshold;
+    avgHeight = avgHeight/rooms.size() * threshold;
 
-    // Select the mai rooms (the rooms with)
+    // Select the main rooms (the rooms with)
     // a greater area than the average 
     for (Room& room : rooms) {
       if((room.width >= avgWidth) && (room.height >= avgHeight)) {
-        room.middlex = room.x + room.width/2,0;
-        room.middley = room.y + room.height/2.0;
         room.mainRoom = true;
         room.id = idCount++;
+        main_rooms.push_back(&room);
       }
     }
   }
