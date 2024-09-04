@@ -9,8 +9,8 @@ const uint16_t RoomWidthMin   {2};
 const uint16_t RoomWidthMax   {11};
 const uint16_t RoomHeightMin  {2};
 const uint16_t RoomHeightMax  {11};
-const uint16_t TileWidth      {20};
-const uint32_t NumRooms       {200};
+const uint16_t TileWidth      {15};
+const uint32_t NumRooms       {100};
 const uint32_t SpawnRadius    {20 * TileWidth};
 const float MainRoomThreshold {1.25};
 const float WindowWidthRatio  {0.6};
@@ -22,8 +22,8 @@ int main(void) {
   SetTargetFPS(60);
   std::srand(std::time(NULL));
   
-  int window_middle_x;
-  int window_middle_y;
+  int window_middle_x = 0;
+  int window_middle_y = 0;
 
   { // Scale the window size to the user's 
     // monitor resolution.
@@ -95,5 +95,6 @@ int main(void) {
   }
 
   CloseWindow();
+  delete engine;
   return 0;
 }
