@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <raylib.h>
 #include <vector>
+#include "graph.hpp"
 #include "room.hpp"
 
 namespace TinyKeep {
@@ -30,6 +31,7 @@ namespace TinyKeep {
         const uint32_t spawn_radius);
     void separateRooms(const uint16_t tile_width);
     void selectRooms(const float threshold);
+    std::vector<Graph::Edge> calculate_graph(void);
   };
 }
 #endif

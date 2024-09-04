@@ -7,10 +7,10 @@
 namespace TinyKeep {
 
   struct Room {
-    float x;
-    float y;
-    float width;
-    float height;
+    int x;
+    int y;
+    int width;
+    int height;
     bool mainRoom;
     std::size_t id;
 

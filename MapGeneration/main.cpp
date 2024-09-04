@@ -2,7 +2,6 @@
 #include <ctime>
 #include <raylib.h>
 #include "TinyKeep/engine.hpp"
-#include "TinyKeep/graph.hpp"
 #include "TinyKeep/room.hpp"
 
 const uint16_t RoomWidthMin   {2};
@@ -53,7 +52,7 @@ int main(void) {
 
   engine->separateRooms(TileWidth);
   engine->selectRooms(MainRoomThreshold);
-  auto graph = Graph::calculate_graph(engine->rooms);
+  auto graph = engine->calculate_graph();
 
   Camera2D camera;
   camera.offset = {0,0};
@@ -75,6 +74,7 @@ int main(void) {
     if(IsKeyDown(KEY_A))
       camera.target.x-=25;
     BeginMode2D(camera);
+
 
     for (TinyKeep::Room& room : engine->rooms)
       room.drawRoom(TileWidth);

@@ -1,9 +1,12 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <map>
 #include <vector>
 #include "engine.hpp"
 #include "../utils.hpp"
+#include "delaunator.hpp"
+#include "graph.hpp"
 
 namespace TinyKeep {
 
@@ -17,7 +20,7 @@ namespace TinyKeep {
   }
 
   inline float aprox_coordinate(float n, float m) {
-   return round((static_cast<float>(n))/m)*m;
+    return round((static_cast<float>(n))/m)*m;
   }
 
   void Engine::generateRooms(
@@ -128,5 +131,58 @@ namespace TinyKeep {
         main_rooms.push_back(&room);
       }
     }
+  }
+ 
+  // Fast integer *2 multiplication
+  inline std::size_t mult2(std::size_t x) {
+    return x << 1;
+  }
+
+  /// Euclidean distance between two points (x1,y1) and (x2,y2).
+  inline float point_distance(float x1, float y1, float x2, float y2) {
+    return sqrtf((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+  }
+
+  std::vector<Graph::Edge> Engine::calculate_graph(void) {
+    std::map<std::pair<double,double>, int> roomHashes;
+    std::vector<double> coords;
+    std::vector<Graph::Edge> graph;
+    std::size_t num_rooms {0};
+
+    // Insert the coordinates of every main room
+    // in a vector for the Delaunator library 
+    for (TinyKeep::Room& room : rooms) {
+      if(!room.mainRoom)
+        continue;
+
+      float middlex = room.x + room.width/2.0f;
+      float middley = room.y + room.height/2.0f;
+
+      coords.push_back(middlex);
+      coords.push_back(middley);
+      roomHashes[std::pair(middlex, middley)] = room.id;
+      num_rooms++;
+    }
+
+    // Calculate the triangulations
+    delaunator::Delaunator d(coords);
+    
+    for(std::size_t i = 0; i < d.triangles.size(); i+=3) {
+      // Get all 3 triangle vertices.
+      const std::pair v1(d.coords[mult2(d.triangles[i])],     d.coords[mult2(d.triangles[i]) + 1]);
+      const std::pair v2(d.coords[mult2(d.triangles[i + 1])], d.coords[mult2(d.triangles[i + 1]) + 1]);
+      const std::pair v3(d.coords[mult2(d.triangles[i + 2])], d.coords[mult2(d.triangles[i + 2]) + 1]);
+
+      // Get each vertex room ID
+      const std::size_t hv1 = roomHashes[v1];
+      const std::size_t hv2 = roomHashes[v2];
+      const std::size_t hv3 = roomHashes[v3];
+
+      // Add each triangle edge to the graph as a new edge.
+      graph.push_back({hv1, hv2, point_distance(v1.first, v1.second, v2.first, v2.second)});
+      graph.push_back({hv1, hv3, point_distance(v1.first, v1.second, v3.first, v3.second)});
+      graph.push_back({hv2, hv3, point_distance(v2.first, v2.second, v3.first, v3.second)});
+    }
+    return Graph::calculate_MST(graph, num_rooms);
   }
 }

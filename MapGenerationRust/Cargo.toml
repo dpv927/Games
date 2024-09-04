@@ -1,0 +1,9 @@
+[package]
+name = "maps"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+raylib = { version = "5.0" }
+delaunator = "1.0.2"
+rand = "0.8.4" 
