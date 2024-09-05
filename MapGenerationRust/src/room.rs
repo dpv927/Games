@@ -7,7 +7,7 @@ pub struct Room {
     pub width: i32,
     pub height: i32,
     pub main: bool,
-    pub id: u32
+    pub id: usize
 }
 
 impl Room {

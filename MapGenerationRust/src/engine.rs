@@ -1,5 +1,8 @@
 use crate::room::Room;
+use crate::graph::Connection;
 use rand::prelude::*;
+use std::collections::HashMap;
+use std::hash::RandomState;
 
 const ROOM_WIDTH_MIN:  u32 = 2;
 const ROOM_WIDTH_MAX:  u32 = 12;
@@ -31,7 +34,7 @@ pub fn generate_rooms(
             width: (rng.gen_range(ROOM_WIDTH_MIN..ROOM_WIDTH_MAX) * tile_width) as i32,
             height: (rng.gen_range(ROOM_HEIGHT_MIN..ROOM_HEIGHT_MAX) * tile_width) as i32,
             main: false,
-            id: u32::MAX,
+            id: usize::MAX,
         });
     }
     rooms
@@ -123,4 +126,14 @@ pub fn separate_rooms(rooms: &mut Vec<Room>, tile_width: u32) {
             break;
         }
     }
+}
+
+pub fn calculate_graph(selected_rooms: &Vec<&Room>) -> Vec<Connection> {
+    let room_hashes = vec![];
+    let mut map: HashMap<(i32,i32), i32> = HashMap::with_capacity(10);
+
+
+    // map.insert(1, 2);
+
+    room_hashes
 }

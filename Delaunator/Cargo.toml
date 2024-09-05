@@ -1,0 +1,8 @@
+[package]
+name = "delaunator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+raylib = { version = "5.0" }
+delaunator = "1.0.2"
