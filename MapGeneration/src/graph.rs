@@ -76,8 +76,8 @@ impl UnionFind {
 ///
 #[derive(Eq, PartialEq, Debug)]
 pub struct Edge {
-    u: usize,
-    v: usize,
+    pub u: usize,
+    pub v: usize,
     w: usize,
 }
 

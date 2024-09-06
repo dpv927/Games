@@ -3,9 +3,9 @@ mod engine;
 mod room;
 mod graph;
 
-const TILE_WIDTH: u32 = 20;
+const TILE_WIDTH: u32 = 14;
 const NUM_ROOMS: u32 = 100;
-const SPAWN_RADIUS: u32 = 20 * TILE_WIDTH;
+const SPAWN_RADIUS: u32 = 5 * TILE_WIDTH;
 
 
 fn main() {
@@ -57,6 +57,23 @@ fn main() {
             room.draw_room(&mut d2);
         }
 
+        for edge in &engine.graph {
+            // Draw each connected main room in the generated rooms
+            let src = &engine.rooms[engine.selected_rooms[edge.u]];
+            let dest = &engine.rooms[engine.selected_rooms[edge.v]];
+            
+            d2.draw_line_ex(
+                Vector2{ 
+                    x: src.x as f32 + (src.width as f32)/2.,
+                    y: src.y as f32 + (src.height as f32)/2. 
+                },
+                Vector2{ 
+                    x: dest.x as f32 + (dest.width as f32)/2.,
+                    y: dest.y as f32 + (dest.height as f32)/2. 
+                },
+                1.5, Color{r: 255, g: 255, b: 0, a: 100});
+        }
+
         for connection in &engine.connections {
             // Draw each connected main room in the generated rooms
             let src = &engine.rooms[engine.selected_rooms[connection.src]];
@@ -71,7 +88,7 @@ fn main() {
                     x: dest.x as f32 + (dest.width as f32)/2.,
                     y: dest.y as f32 + (dest.height as f32)/2. 
                 },
-                5., Color{r: 241, g: 224, b: 90, a: 255});
+                5., Color{r: 255, g: 255, b: 0, a: 255});
         }
     }
 }

@@ -4,13 +4,14 @@ use crate::room::Room;
 use crate::graph::*;
 
 const ROOM_WIDTH_MIN:  u32 = 3;
-const ROOM_WIDTH_MAX:  u32 = 15;
+const ROOM_WIDTH_MAX:  u32 = 16;
 const ROOM_HEIGHT_MIN: u32 = 3;
-const ROOM_HEIGHT_MAX: u32 = 15;
+const ROOM_HEIGHT_MAX: u32 = 16;
 
 pub struct Pdg {
     pub rooms: Vec<Room>,
     pub selected_rooms: Vec<usize>,
+    pub graph: Vec<Edge>,
     pub connections: Vec<Connection>
 }
 
@@ -20,6 +21,7 @@ impl Pdg {
         Pdg {
             rooms: vec![],
             selected_rooms: vec![],
+            graph: vec![],
             connections: vec![],
         }
     }
@@ -176,8 +178,7 @@ impl Pdg {
         // [a,b,..] where each element is the index of a point in 'coordinates'
         // that conforms a triangle.
         let triangles = delaunator::triangulate(&coordinates).triangles;
-        let mut graph: Vec<Edge> = vec![];
-
+ 
         for i in (0..triangles.len()).step_by(3) {
             let v1 = (coordinates[triangles[i]].x as i32,   coordinates[triangles[i]].y as i32);
             let v2 = (coordinates[triangles[i+1]].x as i32, coordinates[triangles[i+1]].y as i32);
@@ -187,13 +188,13 @@ impl Pdg {
             let hv2 = if let Some(value) = room_hashes.get(&v2) { *value } else { return false; };
             let hv3 = if let Some(value) = room_hashes.get(&v3) { *value } else { return false; };
 
-            graph.push(Edge::new(hv1, hv2, point_distance(v1.0, v1.1, v2.0, v2.1)));
-            graph.push(Edge::new(hv1, hv3, point_distance(v1.0, v1.1, v3.0, v3.1)));
-            graph.push(Edge::new(hv2, hv3, point_distance(v2.0, v2.1, v3.0, v3.1)));
+            self.graph.push(Edge::new(hv1, hv2, point_distance(v1.0, v1.1, v2.0, v2.1)));
+            self.graph.push(Edge::new(hv1, hv3, point_distance(v1.0, v1.1, v3.0, v3.1)));
+            self.graph.push(Edge::new(hv2, hv3, point_distance(v2.0, v2.1, v3.0, v3.1)));
         }
 
-        graph.sort();
-        self.connections = calculate_mst(&graph, self.selected_rooms.len());
+        self.graph.sort();
+        self.connections = calculate_mst(&self.graph, self.selected_rooms.len());
         true
     }
 }
