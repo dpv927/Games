@@ -151,7 +151,7 @@ impl Pdg {
         }
     }
 
-    pub fn calculate_graph(&mut self) -> bool {
+    pub fn calculate_graph(&mut self) {
         let mut room_hashes: HashMap<(i32,i32), usize> = HashMap::new();
         let mut coordinates: Vec<delaunator::Point> = vec![];
 
@@ -178,16 +178,37 @@ impl Pdg {
         // [a,b,..] where each element is the index of a point in 'coordinates'
         // that conforms a triangle.
         let triangles = delaunator::triangulate(&coordinates).triangles;
+
+        // We are shure that each coordinate maps to a single room id 
+        // in the room_hashes map, but we have to notice if it 
+        // somehow fails.
+        let recover_id = |opt: Option<&usize>, v: (i32,i32)| -> usize { 
+            match opt {
+                Some(id) => *id,
+                None => { 
+                    let (src, dest) = v;
+                    panic!("unknown vertex ({},{}).", src, dest) 
+                },
+            }
+        };
+
+        // Distance betteen two points (x1,y1) and (x2,y2) as a Integer.
+        let point_distance = |x1: i32, y1: i32, x2: i32, y2: i32| -> usize {
+            (((x2 - x1).pow(2) + (y2 - y1).pow(2)) as f32).sqrt() as usize
+        };
  
         for i in (0..triangles.len()).step_by(3) {
+            // Get each vertex of a triangle (Three connected rooms). 
             let v1 = (coordinates[triangles[i]].x as i32,   coordinates[triangles[i]].y as i32);
             let v2 = (coordinates[triangles[i+1]].x as i32, coordinates[triangles[i+1]].y as i32);
             let v3 = (coordinates[triangles[i+2]].x as i32, coordinates[triangles[i+2]].y as i32);
         
-            let hv1 = if let Some(value) = room_hashes.get(&v1) { *value } else { return false; };
-            let hv2 = if let Some(value) = room_hashes.get(&v2) { *value } else { return false; };
-            let hv3 = if let Some(value) = room_hashes.get(&v3) { *value } else { return false; };
-
+            // Get each vertex the associated room ID
+            let hv1 = recover_id(room_hashes.get(&v1), v1);
+            let hv2 = recover_id(room_hashes.get(&v2), v2);
+            let hv3 = recover_id(room_hashes.get(&v3), v3);
+            
+            // Add to the graph all the connections inside the triangle.
             self.graph.push(Edge::new(hv1, hv2, point_distance(v1.0, v1.1, v2.0, v2.1)));
             self.graph.push(Edge::new(hv1, hv3, point_distance(v1.0, v1.1, v3.0, v3.1)));
             self.graph.push(Edge::new(hv2, hv3, point_distance(v2.0, v2.1, v3.0, v3.1)));
@@ -195,14 +216,9 @@ impl Pdg {
 
         self.graph.sort();
         self.connections = calculate_mst(&self.graph, self.selected_rooms.len());
-        true
     }
 }
 
 fn aprox_coordinate(n: f32, m: f32) -> i32 {
     ((n / m).round() as i32) * (m as i32)
-}
-
-fn point_distance(x1: i32, y1: i32, x2: i32, y2: i32) -> usize {
-    (((x2 - x1).pow(2) + (y2 - y1).pow(2)) as f32).sqrt() as usize
 }
