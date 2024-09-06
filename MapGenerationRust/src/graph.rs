@@ -74,11 +74,30 @@ impl UnionFind {
 /// `v` are rooms IDs from two rooms. The propierty `w` is the edge's weight,
 /// in this case is the euclidean distance between the center of each room.
 ///
-#[derive(Ord, Eq, PartialEq, PartialOrd)]
-struct Edge {
+#[derive(Eq, PartialEq, Debug)]
+pub struct Edge {
     u: usize,
     v: usize,
     w: usize,
+}
+
+impl Ord for Edge {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.w.cmp(&other.w)
+    }
+}
+
+impl PartialOrd for Edge {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.w.cmp(&other.w))
+    }
+}
+
+impl Edge {
+        
+    pub fn new(u: usize, v: usize, w: usize) -> Edge {
+        Edge { u, v, w }
+    }
 }
 
 ///
@@ -91,8 +110,8 @@ struct Edge {
 /// field from Edge and we now have the necessary information.
 ///
 pub struct Connection {
-    src: usize,
-    dest: usize
+    pub src: usize,
+    pub dest: usize
 }
 
 ///
@@ -105,11 +124,9 @@ pub struct Connection {
 /// (through any path) and the sum of all connections between all vertices is 
 /// minimized.
 /// 
-pub fn calculate_mst(graph: &mut Vec<Edge>, num_vertices: usize) -> Vec<Connection> {
+pub fn calculate_mst(graph: &Vec<Edge>, num_vertices: usize) -> Vec<Connection> {
     let mut mst = vec![];
     let mut uf = UnionFind::new(num_vertices);
-
-    graph.sort();
 
     for edge in graph {
         if uf.find(edge.u) != uf.find(edge.v) {

@@ -1,37 +1,16 @@
 use raylib::prelude::*;
-use delaunator::*;
 mod engine;
 mod room;
 mod graph;
 
 const TILE_WIDTH: u32 = 20;
 const NUM_ROOMS: u32 = 100;
-const SPAWN_RADIUS: u32 = 5 * TILE_WIDTH;
+const SPAWN_RADIUS: u32 = 20 * TILE_WIDTH;
 
 
 fn main() {
 
-    let points = vec![
-        Point { x: 158., y: 165. },
-        Point { x: 576., y: 101. },
-        Point { x: 457., y: 289. },
-        Point { x: 142., y: 587. },
-        Point { x: 419., y: 701. },
-        Point { x: 607., y: 523. },
-        Point { x: 448., y: 478. }
-    ];
-
-    let result = triangulate(&points);
-    println!("{:?}", result.triangles); // [0, 2, 1, 0, 3, 2]
-
-    for i in (0..result.triangles.len()).step_by(3) {
-        println!("Triangle points: [[{}, {}], [{}, {}], [{}, {}]]",
-            points[result.triangles[i]].x, points[result.triangles[i]].y,
-            points[result.triangles[i+1]].x, points[result.triangles[i+1]].y,
-            points[result.triangles[i+2]].x, points[result.triangles[i+2]].y)
-    }
-
- /*   let (mut rl, thread) = raylib::init()
+    let (mut rl, thread) = raylib::init()
         .size(0, 0)
         .title("Map Generation")
         .build();
@@ -51,16 +30,17 @@ fn main() {
         rl.set_window_position((mon_w - win_w) >> 1, (mon_h - win_h) >> 1);
     }
 
-    let mut rooms = engine::generate_rooms(NUM_ROOMS, win_w >> 1, win_h >> 1,
-        TILE_WIDTH, SPAWN_RADIUS);
-    _ = engine::select_rooms(&mut rooms, 1.35);
-    engine::separate_rooms(&mut rooms, TILE_WIDTH);
+    let mut engine = engine::Pdg::new();
+    engine.generate_rooms(NUM_ROOMS, win_w >> 1, win_h >> 1, TILE_WIDTH, SPAWN_RADIUS);
+    engine.select_rooms(1.35);
+    engine.separate_rooms(TILE_WIDTH);
+    engine.calculate_graph();
 
     let mut camera = Camera2D{ 
-        offset: Vector2::new(0.0, 0.0),
-        target: Vector2::new(0.0, 0.0),
-        rotation: 0.0,
-        zoom: 1.0,
+        offset: Vector2::new(0., 0.),
+        target: Vector2::new(0., 0.),
+        rotation: 0.,
+        zoom: 1.,
     };
 
     while !rl.window_should_close() {
@@ -70,11 +50,28 @@ fn main() {
         if rl.is_key_down(KeyboardKey::KEY_A) { camera.target.x -= 25.0; }
 
         let mut d = rl.begin_drawing(&thread);
-        d.clear_background(Color::BLACK);
+        d.clear_background(Color{r: 12, g: 62, b: 84, a: 255});
 
         let mut d2 = d.begin_mode2D(camera); 
-        for room in &rooms {
-            room.draw_room(TILE_WIDTH, &mut d2);
+        for room in &engine.rooms {
+            room.draw_room(&mut d2);
         }
-    }*/
+
+        for connection in &engine.connections {
+            // Draw each connected main room in the generated rooms
+            let src = &engine.rooms[engine.selected_rooms[connection.src]];
+            let dest = &engine.rooms[engine.selected_rooms[connection.dest]];
+            
+            d2.draw_line_ex(
+                Vector2{ 
+                    x: src.x as f32 + (src.width as f32)/2.,
+                    y: src.y as f32 + (src.height as f32)/2. 
+                },
+                Vector2{ 
+                    x: dest.x as f32 + (dest.width as f32)/2.,
+                    y: dest.y as f32 + (dest.height as f32)/2. 
+                },
+                5., Color{r: 241, g: 224, b: 90, a: 255});
+        }
+    }
 }

@@ -10,6 +10,9 @@ pub struct Room {
     pub id: usize
 }
 
+const MAIN_COLOR: Color = Color{ r: 184, g: 124, b: 114, a: 255 };
+const NORM_COLOR: Color = Color{ r: 20,  g: 69,  b: 108, a: 255 };
+
 impl Room {
     
     pub fn is_colliding_with(&self, other: &Self) -> bool {
@@ -17,28 +20,22 @@ impl Room {
         (self.y < (other.y + other.height) && (self.y + self.height) > other.y)   
     }
 
-    pub fn draw_room(&self, tile_size: u32, handle: &mut RaylibMode2D<RaylibDrawHandle>) {
-        let color = if self.main { Color::RED } else { Color::BLUE };
-        let tile_size = tile_size as i32;
-        let mut pos_x: i32 = self.x;
-        let mut pos_y: i32;
+    pub fn draw_room(&self, handle: &mut RaylibMode2D<RaylibDrawHandle>) {
+        handle.draw_rectangle(
+            self.x,
+            self.y,
+            self.width,
+            self.height,
+            if self.main { 
+                MAIN_COLOR 
+            } else { NORM_COLOR });
 
-        // Draw a internal grid
-        while pos_x < (self.x + self.width) {
-            pos_y = self.y;
-            while pos_y < (self.y + self.height) {
-                handle.draw_rectangle_lines(
-                    pos_x,
-                    pos_y,
-                    tile_size,
-                    tile_size, 
-                    color);
-                pos_y += tile_size;
-            }
-            pos_x += tile_size;
-        }
+        handle.draw_text(
+            &self.id.to_string(),
+            self.x + 15,
+            self.y + 15,
+            20, Color::RAYWHITE);
 
-        // Draw the room edges 
         handle.draw_rectangle_lines(
             self.x,
             self.y, 
