@@ -10,8 +10,8 @@ pub struct Room {
     pub id: usize
 }
 
-const MAIN_COLOR: Color = Color{ r: 184, g: 124, b: 114, a: 255 };
-const NORM_COLOR: Color = Color{ r: 20,  g: 69,  b: 108, a: 255 };
+const MAIN_COLOR: Color = Color{ r: 232, g: 72, b: 82, a: 255 };
+const NORM_COLOR: Color = Color{ r: 35,  g: 124, b: 196, a: 255 };
 
 impl Room {
     

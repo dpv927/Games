@@ -3,15 +3,17 @@ use rand::prelude::*;
 use crate::room::Room;
 use crate::graph::*;
 
-const ROOM_WIDTH_MIN:  u32 = 3;
-const ROOM_WIDTH_MAX:  u32 = 16;
-const ROOM_HEIGHT_MIN: u32 = 3;
-const ROOM_HEIGHT_MAX: u32 = 16;
+const ROOM_WIDTH_MIN        :i32 = 3;
+const ROOM_WIDTH_MAX        :i32 = 16;
+const ROOM_HEIGHT_MIN       :i32 = 3;
+const ROOM_HEIGHT_MAX       :i32 = 16;
+const ROOM_SIDES_PROPORTION :f32 = 2.0;
+const MAIN_ROOM_THRESHOLD   :f32 = 1.35; 
+const MIN_NUM_MAIN_ROOMS    :i32 = 5;
 
 pub struct Pdg {
     pub rooms: Vec<Room>,
     pub selected_rooms: Vec<usize>,
-    pub graph: Vec<Edge>,
     pub connections: Vec<Connection>
 }
 
@@ -21,7 +23,6 @@ impl Pdg {
         Pdg {
             rooms: vec![],
             selected_rooms: vec![],
-            graph: vec![],
             connections: vec![],
         }
     }
@@ -31,20 +32,31 @@ impl Pdg {
     /// (x, y). the radius is measured in tiles, and the tiles are measured
     /// in pixels.
     ///
-    pub fn generate_rooms(&mut self, num_rooms: u32, x: i32, y: i32, 
-        tile_width: u32, spawn_radius: u32) {
+    pub fn generate_rooms(&mut self, num_rooms: i32, x: i32, y: i32, 
+        tile_width: i32, spawn_radius: i32) {
 
+        let inv_prop = 1.0/ROOM_SIDES_PROPORTION;
         let mut rng = rand::thread_rng();
 
         for i in 0..num_rooms {
             let rnd_radius = (spawn_radius as f32) * (rng.gen::<f32>().sqrt());
             let angle = rng.gen::<f32>().sqrt() * 2.0 * std::f32::consts::PI;
 
+            let mut width  = i32::MAX; 
+            let mut height = i32::MIN;
+            let mut div: f32 = 0.;
+
+            while div > ROOM_SIDES_PROPORTION || div < inv_prop {
+                width  = rng.gen_range(ROOM_WIDTH_MIN..ROOM_WIDTH_MAX);
+                height = rng.gen_range(ROOM_HEIGHT_MIN..ROOM_HEIGHT_MAX);
+                div = (width as f32)/(height as f32);
+            }
+
             self.rooms.push(Room {
                 x: aprox_coordinate((rnd_radius * angle.cos()) + x as f32, tile_width as f32),
                 y: aprox_coordinate((rnd_radius * angle.sin()) + y as f32, tile_width as f32),
-                width: (rng.gen_range(ROOM_WIDTH_MIN..ROOM_WIDTH_MAX) * tile_width) as i32,
-                height: (rng.gen_range(ROOM_HEIGHT_MIN..ROOM_HEIGHT_MAX) * tile_width) as i32,
+                width: (width * tile_width),
+                height: (height * tile_width),
                 main: false,
                 id: i as usize,
             });
@@ -60,7 +72,7 @@ impl Pdg {
     /// room at 'Pdg.rooms'. F.e, if we want to obtain a selected room from
     /// 'Pdg.rooms', we only have to do `pdg.rooms[pdg.selected_rooms[id]]`.
     ///
-    pub fn select_rooms(&mut self, threshold: f32) {
+    pub fn select_rooms(&mut self) -> Option<()> {
     
         let (average_width, average_height) = self.rooms.iter().fold((0., 0.), 
             |(acc_width, acc_height), room| {
@@ -68,8 +80,9 @@ impl Pdg {
         });
 
         let rooms_count = self.rooms.len() as f32;
-        let width_threshold  = (average_width/rooms_count  * threshold) as i32;
-        let height_threshold = (average_height/rooms_count * threshold) as i32;
+        let width_threshold  = (average_width/rooms_count  * MAIN_ROOM_THRESHOLD) as i32;
+        let height_threshold = (average_height/rooms_count * MAIN_ROOM_THRESHOLD) as i32;
+        let mut main_room_count = 0;
 
         for i in 0..self.rooms.len() {
             let room = &mut self.rooms[i];
@@ -77,8 +90,14 @@ impl Pdg {
             if room.width >= width_threshold && room.height >= height_threshold {
                 self.selected_rooms.push(i);
                 room.main = true;
+                main_room_count += 1;
             }
         }
+
+        // Its wrong if there are a few rooms
+        if main_room_count < MIN_NUM_MAIN_ROOMS {
+            return None;
+        } else { Some(()) }
     }
 
     /// 
@@ -87,7 +106,7 @@ impl Pdg {
     /// and we want them to be side to side or at least separated at some
     /// distance (in the worst scenario).
     ///
-    pub fn separate_rooms(&mut self, tile_width: u32) {
+    pub fn separate_rooms(&mut self, tile_width: i32) {
         let mut rooms_overlap: bool;
 
         loop {
@@ -178,6 +197,7 @@ impl Pdg {
         // [a,b,..] where each element is the index of a point in 'coordinates'
         // that conforms a triangle.
         let triangles = delaunator::triangulate(&coordinates).triangles;
+        let mut graph = vec![];
 
         // We are shure that each coordinate maps to a single room id 
         // in the room_hashes map, but we have to notice if it 
@@ -187,7 +207,7 @@ impl Pdg {
                 Some(id) => *id,
                 None => { 
                     let (src, dest) = v;
-                    panic!("unknown vertex ({},{}).", src, dest) 
+                    panic!("Unknown vertex ({},{}).", src, dest) 
                 },
             }
         };
@@ -209,13 +229,13 @@ impl Pdg {
             let hv3 = recover_id(room_hashes.get(&v3), v3);
             
             // Add to the graph all the connections inside the triangle.
-            self.graph.push(Edge::new(hv1, hv2, point_distance(v1.0, v1.1, v2.0, v2.1)));
-            self.graph.push(Edge::new(hv1, hv3, point_distance(v1.0, v1.1, v3.0, v3.1)));
-            self.graph.push(Edge::new(hv2, hv3, point_distance(v2.0, v2.1, v3.0, v3.1)));
+            graph.push(Edge::new(hv1, hv2, point_distance(v1.0, v1.1, v2.0, v2.1)));
+            graph.push(Edge::new(hv1, hv3, point_distance(v1.0, v1.1, v3.0, v3.1)));
+            graph.push(Edge::new(hv2, hv3, point_distance(v2.0, v2.1, v3.0, v3.1)));
         }
 
-        self.graph.sort();
-        self.connections = calculate_mst(&self.graph, self.selected_rooms.len());
+        graph.sort();
+        self.connections = calculate_mst(&graph, self.selected_rooms.len());
     }
 }
 
