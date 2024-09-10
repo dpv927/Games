@@ -2,7 +2,7 @@
   <h1>Delaunator (Delaunay Triangulation)</h1>
 </div>
 
-![image](https://github.com/user-attachments/assets/66820568-5f9b-4264-9ded-05426866e76d)
+![image](https://github.com/user-attachments/assets/c1aadfd9-2b4a-4d02-a599-15a5a42b09bb)
 
 
 ## About
