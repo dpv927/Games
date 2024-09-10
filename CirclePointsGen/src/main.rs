@@ -32,7 +32,7 @@ fn main() {
         let monitor = window::get_current_monitor();
         let mon_h = window::get_monitor_height(monitor);
         let mon_w = window::get_monitor_width(monitor);
-        win_width = mon_h >> 1;  
+        win_width = mon_w * 2/5;
         win_half  = win_width >> 1;
         
         rl.set_window_size(win_width, win_width);
