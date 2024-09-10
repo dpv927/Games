@@ -16,7 +16,25 @@ the tile size is 1. Because of this, approximations are made for the points and 
 of the generated points may end up outside the circle, although these small errors 
 do not significantly affect the results in later steps of the TinyKeep algorithm.
 
+## Theory
+
+The basic procedure is written in python using `matplotlib` and `numpy`, then 
+ported to rust using raylib and adding a few things in order to make the 
+algorithm usable for the TinyKeep's algorithm.
+
+You can run the demo script with the following command:
+```bash
+python circle.py
+```
+
+The result must be similar to this image:
+
+<div align="center">
+  <h1>Circle Points Generation</h1>
+  <img src="https://github.com/user-attachments/assets/d6ac9874-3f2c-4d10-a573-7c2d8bde60f7" alt="image" width="500" height="500">
+</div>
+
 ## References
 
-- <a href="https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly">Generate a random point within a circle (uniformly)</a> 
+- <a href="https://blogs.sas.com/content/iml/2016/03/30/generate-uniform-2d-ball.html">Generate points uniformly inside a circular region in 2-D</a>
 - <a href="https://www.reddit.com/r/gamedev/comments/1dlwc4/procedural_dungeon_generation_algorithm_explained/">TinyKeep's Procedural Dungeon Generation</a>

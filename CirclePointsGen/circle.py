@@ -8,7 +8,7 @@ import numpy as np
 
 radius = 2
 twopi = np.pi * 2
-num_points = 10000
+num_points = 1000
 tile_size = 10
 
 theta = np.random.uniform(0, twopi, num_points)
