@@ -3,7 +3,7 @@ use delaunator::*;
 use rand::Rng;
 
 
-const EDGE_COLOR  : Color = Color::new(245, 245, 245, 40);
+const EDGE_COLOR  : Color = Color::new(245, 245, 245, 80);
 const VERTEX_COLOR: Color = Color::RAYWHITE;
 const INIT_POINTS: usize = 15;
 
