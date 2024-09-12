@@ -9,7 +9,7 @@ const ROOM_HEIGHT_MIN       :i32 = 3;
 const ROOM_HEIGHT_MAX       :i32 = 16;
 const ROOM_SIDES_PROPORTION :f32 = 2.0;
 const MAIN_ROOM_THRESHOLD   :f32 = 1.35; 
-const MIN_NUM_MAIN_ROOMS    :i32 = 5;
+const MIN_NUM_MAIN_ROOMS    :i32 = 10;
 
 pub struct Pdg {
     pub rooms: Vec<Room>,
@@ -34,6 +34,11 @@ impl Pdg {
     ///
     pub fn generate_rooms(&mut self, num_rooms: i32, x: i32, y: i32, 
         tile_width: i32, spawn_radius: i32) {
+
+        // Maybe we generate a new set of rooms because the last generation
+        // was not good enough.
+        if !self.rooms.is_empty() { self.rooms.clear(); }
+        if !self.selected_rooms.is_empty() { self.selected_rooms.clear(); }
 
         let inv_prop = 1.0/ROOM_SIDES_PROPORTION;
         let mut rng = rand::thread_rng();

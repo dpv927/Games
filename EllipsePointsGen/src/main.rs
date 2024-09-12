@@ -5,6 +5,8 @@ fn aprox_point(n: f32, m: f32) -> f32 {
     (n/m).round() * m
 }
 
+// This function can be easily optimized, but its intention is to show the
+// basic procedure to generate points uniformly inside a ellipse. 
 fn rand_ellipse(n: usize, horizontal_axis: i32, vertical_axis: i32) -> Vec<[f32;2]> {
     
     // Generate a matrix X ~ N(0, I_d)
