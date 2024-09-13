@@ -5,8 +5,11 @@ use frame::Frame;
 
 mod tetromino;
 mod frame;
+mod space;
 
 const TILE_SIZE: i32 = 70;
+const FONT_SIZE: i32 = 40;
+const FONT_COLOR: Color = Color::new(173,176,187,255);
 
 fn main() {
      let (mut rl, thread) = raylib::init()
@@ -29,21 +32,30 @@ fn main() {
     }
 
     let mut rng = rand::thread_rng();
-    let dist = rand_distr::Uniform::new(0,6);
+    let dist = rand_distr::Uniform::new(0,7);
 
     // Frames (Places to show tetrominoes and blocks)
     // In the main_frame we show the game, and in the next_frame e show
     // the next tetromino to pick.
     let main_frame = Frame::new(20, 10, TILE_SIZE, 0, 3, 0);
     let next_frame = Frame::new(4,  4,  TILE_SIZE, 13 * TILE_SIZE, 0, 0);
+    let info_x = TILE_SIZE * 13;
 
     // Current tetromino and the next one.
     let mut actual = Tetronimo::new(dist.sample(&mut rng), main_frame.def_x, main_frame.def_y);
     let next   = Tetronimo::new(dist.sample(&mut rng), next_frame.def_x, next_frame.def_y);
 
+    // All the possitioned tetrominoes as blocks in an array.
+
+    // Score variables
+    let shapes = 0;
+    let rows = 0;
+    let score = 0;
+
     while !rl.window_should_close() {
 
         // Move the tetromino vertically.
+        // (if possible).
         if rl.is_key_down(KeyboardKey::KEY_A) {
             actual.move_to_side(Direction::Left);
 
@@ -51,9 +63,16 @@ fn main() {
             actual.move_to_side(Direction::Right);
         }
 
-        // Rotate the tetromino if possible
+        // Rotate the tetromino. 
+        // (if possible)
         if rl.is_key_pressed(KeyboardKey::KEY_UP) {
             actual.rotate();
+        }
+
+        // Move the tetromino one block down
+        // (if possible).
+        if rl.is_key_down(KeyboardKey::KEY_DOWN) {
+            actual.move_down();
         }
 
         let mut d = rl.begin_drawing(&thread);
@@ -63,5 +82,9 @@ fn main() {
         next_frame.draw_tetronimo(&next, &mut  d);
         main_frame.draw_self(&mut d);
         next_frame.draw_self(&mut d);
+
+        d.draw_text(&format!("Shapes: {}", shapes), info_x, 7 * TILE_SIZE, FONT_SIZE, FONT_COLOR);
+        d.draw_text(&format!("Rows: {}", rows),     info_x, 8 * TILE_SIZE, FONT_SIZE, FONT_COLOR);
+        d.draw_text(&format!("Score: {}", score),   info_x, 9 * TILE_SIZE, FONT_SIZE, FONT_COLOR);
     }
 }

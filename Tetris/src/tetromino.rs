@@ -1,4 +1,5 @@
 use raylib::prelude::*;
+use crate::space::Space;
 
 pub const TETRONIMOS: [[u16;4];7] = [
     // (I)
@@ -160,5 +161,13 @@ impl Tetronimo {
         }
 
         self.angle = (self.angle + 1) % 4;
+    }
+
+    pub fn move_down(&mut self, space: &mut Space) {
+        let shape = TETRONIMOS[self.shape][self.angle];
+        let shape_mask = 0xf;
+        let row_mask = 0xf000;
+
+
     }
 }
