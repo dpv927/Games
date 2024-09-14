@@ -2,6 +2,7 @@ use raylib::prelude::*;
 use rand_distr::Distribution;
 use tetromino::{Tetronimo, Direction};
 use frame::Frame;
+use space::Space;
 
 mod tetromino;
 mod frame;
@@ -46,6 +47,7 @@ fn main() {
     let next   = Tetronimo::new(dist.sample(&mut rng), next_frame.def_x, next_frame.def_y);
 
     // All the possitioned tetrominoes as blocks in an array.
+    let mut space = Space::new();
 
     // Score variables
     let shapes = 0;
@@ -72,12 +74,13 @@ fn main() {
         // Move the tetromino one block down
         // (if possible).
         if rl.is_key_down(KeyboardKey::KEY_DOWN) {
-            actual.move_down();
+            actual.move_down(&mut space);
         }
 
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::BLACK);
 
+        main_frame.draw_space(&space, &mut d);
         main_frame.draw_tetronimo(&actual, &mut d);
         next_frame.draw_tetronimo(&next, &mut  d);
         main_frame.draw_self(&mut d);

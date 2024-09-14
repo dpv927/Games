@@ -1,5 +1,6 @@
 use raylib::prelude::*;
 use crate::tetromino::*;
+use crate::space::*;
 
 const FRAME_COLOR: Color = Color::new(
     0x66,
@@ -78,5 +79,33 @@ impl Frame {
                 break;
             } else { bit += 1; }
         };
+    }
+
+    pub fn draw_space(&self, space: &Space, handle: &mut RaylibDrawHandle) {
+        let mut x = 0;
+        let mut y = 0;
+
+        for row in space.blocks {
+            for bit in 0..10 {
+
+                if Tetronimo::get_bit(row, bit) != 0 {
+                    handle.draw_rectangle(
+                        x * self.tile_width + self.tile_width,
+                        y * self.tile_width + self.tile_width,
+                        self.tile_width,
+                        self.tile_width,
+                        COLORS[space.colors[y as usize][x as usize] as usize]);
+                } else {
+                    handle.draw_rectangle(
+                        x * self.tile_width + self.tile_width,
+                        y * self.tile_width + self.tile_width,
+                        self.tile_width,
+                        self.tile_width,
+                        Color::BLACK);
+                }
+                x = (x + 1) % 10;
+            }
+            y += 1;
+        }
     }
 }

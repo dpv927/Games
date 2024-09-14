@@ -11,8 +11,8 @@
 //
 
 pub struct Space {
-    blocks: [u16;20],
-    colors: [u8;200]
+    pub blocks: [u16;20],
+    pub colors: [[u8;10];20]
 }
 
 impl Space {
@@ -20,7 +20,7 @@ impl Space {
     pub fn new() -> Space {
         Space {
             blocks: [0;20],
-            colors: [0;200]
+            colors: [[0;10];20]
         }
     }
 }

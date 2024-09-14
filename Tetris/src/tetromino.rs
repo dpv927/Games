@@ -159,15 +159,93 @@ impl Tetronimo {
                 _ => {},
             }
         }
-
         self.angle = (self.angle + 1) % 4;
     }
 
-    pub fn move_down(&mut self, space: &mut Space) {
+    pub fn move_down(&mut self, space: &mut Space) -> bool {
         let shape = TETRONIMOS[self.shape][self.angle];
-        let shape_mask = 0xf;
-        let row_mask = 0xf000;
+        let mut collision = false;
+        
+        // Check if is colliding with the bottom
+        let mut row_mask = 0x000f;
+        let mut last_row = 3;
 
+        loop {
+            if (row_mask & shape) != 0  || // Its the last != 0 row
+                (last_row - 1) < 0 { // End of the loop
+                break;
+            }
 
+            row_mask <<= 4;
+            last_row -= 1;
+        }
+
+        if self.y + last_row == 19 {
+            // The Tetronimo is touching the bottom
+            collision = true;
+        } else {
+            // The Tetronimo is somewhere in the space
+            let mut row = space.blocks[(self.y + 1) as usize];
+            let mut x_i = 0;
+            let mut y_i = 1;
+
+            for bit in 0..16 {
+                if Tetronimo::get_bit(shape, bit) != 0 && 
+                    Tetronimo::get_bit(row, (self.x + x_i) as u8) != 0 {
+                    collision = true;
+                }
+
+                if (x_i + 1) == 4 {
+                    y_i += 1;
+                    x_i = 0;
+                
+                    if self.y + y_i >= 19 { 
+                        break; 
+                    }
+                
+                    row = space.blocks[(self.y + y_i) as usize];
+                } else { x_i += 1; }
+            }
+        }
+
+        if !collision {
+            self.y += 1;
+        } else {
+            // Merge the Tetronimo and the other blocks at the space.
+            let y = self.y as usize;
+            let mut row_mask = 0xf000;
+
+            for row in 0..(last_row+1) {
+                println!("{}", last_row);
+                space.blocks[y + row as usize] = 
+                    ((shape & row_mask) << (row * 4)) >> self.x;
+                row_mask >>= 4;
+            }
+
+            let mut x_i = 0;
+            let mut y_i = 0;
+
+            for bit in 0..16 {
+
+                if Tetronimo::get_bit(shape, bit) != 0 {
+                    // Set each block of the Tetronimo in the space the 
+                    // its color.
+                    space.colors[(self.y + y_i) as usize][(self.x + x_i) as usize] 
+                        = self.shape as u8;
+                }
+                
+                if (x_i + 1) == 4 {
+                    y_i += 1;
+                    x_i = 0;
+
+                    if y_i > last_row { 
+                        break; 
+                    }
+                } else { x_i += 1; }
+            }
+            self.x = 3;
+            self.y = 0;
+        }
+        collision
     }
 }
