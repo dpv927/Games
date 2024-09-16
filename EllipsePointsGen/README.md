@@ -30,7 +30,6 @@ python ellipse.py
 The result must be similar to this image:
 
 <div align="center">
-  <h1>Circle Points Generation</h1>
   <img src="https://github.com/user-attachments/assets/f18d684a-0db8-40d7-a073-65643d67f846" alt="image" width="500" height="500">
 </div>
 
