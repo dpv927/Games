@@ -130,10 +130,51 @@ impl Tetronimo {
         }
     }
 
-    pub fn rotate(&mut self) {
+    pub fn rotate(&mut self, space: &Space) {
         let next_shape = TETRONIMOS[self.shape][(self.angle + 1) % 4];
         let shape = TETRONIMOS[self.shape][self.angle];
 
+        // Check if the next shape (sprite) collides with any of 
+        // the blocks inside of the space.
+        let blocks_row_mask = if self.x >= 0 { 
+            /* Align 0b1111 mask to x coord */
+            0xf000 >> self.x 
+        } else if self.x == -1 {
+            /* At x=-1 only 3 (out of 4) bits of each row can
+             * be inside the space = 0b111000... */
+            0xe000
+        }else /* -2 */ {
+            /* Same as x=-1 but this time only 2 bits can be 
+             * inside the space = 0b11000... */
+            0xc000 
+        };
+
+        let mut row = space.blocks[self.y as usize];
+        let mut row_mask = 0xf000;
+        
+        for i in 0..4 {
+            if self.y + i > 19 { 
+                break;
+            }
+
+            let blocks = row & blocks_row_mask;
+            let row_bits = ((next_shape & row_mask) << (4*i)) >> self.x;
+            
+            if (blocks & row_bits) != 0 {
+                /* collision detected */
+                return;
+            }
+
+            if i != 4 {
+                /* except in last loop */
+                row_mask >>= 4;
+                row = space.blocks[(self.y + i) as usize];
+            }
+        }
+
+        // If no collissions with other blocks inside the space,
+        // just calculate if its necessary to move the Tetronimo 
+        // when rotating itself ().
         if self.x < 0 {
             match self.x {
                 -2 => { self.x = 0; },
