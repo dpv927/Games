@@ -83,8 +83,8 @@ fn main() {
     while !rl.window_should_close() {
         if rl.is_key_down(KeyboardKey::KEY_S) { camera.position.y -= 20.0; }
         if rl.is_key_down(KeyboardKey::KEY_W) { camera.position.y += 20.0; }
-        if rl.is_key_down(KeyboardKey::KEY_D) { camera.position.z += 20.0; }
-        if rl.is_key_down(KeyboardKey::KEY_A) { camera.position.z -= 20.0; }
+        if rl.is_key_down(KeyboardKey::KEY_A) { camera.position.z += 20.0; }
+        if rl.is_key_down(KeyboardKey::KEY_D) { camera.position.z -= 20.0; }
         if rl.is_key_down(KeyboardKey::KEY_UP) { camera.position.x -= 20.0; }
         if rl.is_key_down(KeyboardKey::KEY_DOWN) { camera.position.x += 20.0; }
 
