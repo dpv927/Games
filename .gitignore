@@ -1,3 +1,5 @@
 *.o
 *exec
 */target/
+*/zig-out/
+*/.zig-cache/
