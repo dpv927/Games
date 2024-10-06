@@ -14,10 +14,10 @@ const TreeConnection = struct {
 };
 
 const TreeNode = struct {
-    var rng = std.Random.DefaultPrng.init(undefined);
-    var allocator = std.heap.c_allocator;
+    var rng: std.Random.DefaultPrng = undefined;
+    var allocator: std.mem.Allocator = undefined;
 
-    links: [4]?TreeConnection,
+    links: [4]?*TreeConnection,
     x: i32,
     y: i32,
 
@@ -39,31 +39,24 @@ const TreeNode = struct {
             .y = 0,
         };
 
-        node.links[node_port] = TreeConnection{
+        node.links[@intFromEnum(node_port)] = TreeConnection{
             .dest_node = parent,
             .dest_port = parent_port,
         };
         return node;
     }
 
-    fn is_leaf(self: *TreeNode) bool {
-        return (self.links[0] == null) and
-            (self.links[1] == null) and
-            (self.links[2] == null) and
-            (self.links[3] == null);
+    pub fn generate_subtree(self: *TreeNode, max_depth: u32) !void {
+        try self.pgenerate_subtree(0, max_depth);
     }
 
-    pub fn generate_subtree(self: *TreeNode, max_depth: u32) void {
-        self.pgenerate_subtree(0, max_depth);
-    }
-
-    fn pgenerate_subtree(self: *TreeNode, depth: u32, max_depth: u32) void {
+    fn pgenerate_subtree(self: *TreeNode, depth: u32, max_depth: u32) !void {
         for (0..(rng.random().int(u8) % 5)) |_| {
-
             // Generate a random unused port at the
             // current node.
             var rand_port = rng.random().int(u8) % 4;
             while (self.links[rand_port] != null) {
+                std.debug.print("pepe\n", .{});
                 rand_port = rng.random().int(u8) % 4;
             }
 
@@ -76,24 +69,40 @@ const TreeNode = struct {
                 port.west => port.east,
             };
 
+            // Try to create a child node (the allocation can fail)
+            const child_node = try new_node(self, parent_port, child_port);
+
             // Create the link (Parent) -> (Child).
             // Also (Child) -> (Parent) at new_node()
             self.links[rand_port] = TreeConnection{
-                .dest_node = new_node(self, parent_port, child_port),
+                .dest_node = child_node,
                 .dest_port = child_port,
             };
 
             if ((depth + 1) < max_depth) {
                 // Keep generating subtrees unless this node is a
                 // leaf node parent.
-                pgenerate_subtree(self.links[rand_port].?.dest_node);
+                try child_node.pgenerate_subtree(depth + 1, max_depth);
+            }
+        }
+    }
+
+    pub fn destroy_subtree(self: *TreeNode) void {
+        defer allocator.destroy(self);
+
+        for (self.links) |link| {
+            if (link != null) {
+                link.?.dest_node.destroy_subtree();
             }
         }
     }
 };
 
 pub fn main() !void {
+    TreeNode.rng = std.Random.DefaultPrng.init(undefined);
+    TreeNode.allocator = std.heap.c_allocator;
+
     const node = try TreeNode.new_root();
-    //node.generate_subtree();
-    defer TreeNode.allocator.destroy(node);
+    try node.generate_subtree(2);
+    node.destroy_subtree();
 }

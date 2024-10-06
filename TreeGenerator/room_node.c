@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 #include "room_node.h"
 
 uint8_t rnd_links(uint8_t max) {
@@ -8,15 +9,11 @@ uint8_t rnd_links(uint8_t max) {
 }
 
 room_node new_root() {
-  uint8_t num_links = rnd_links(4);
   room_node rn;
-
-  /* This malloc is handled after calling
-   * this function (trust me). */
-  rn.links = malloc(sizeof(rn) * num_links);
-  rn.num_links = num_links;
-  // rn.x = 0;
-  // rn.y = 0;
+  rn.links[0] = NULL;
+  rn.links[1] = NULL;
+  rn.links[2] = NULL;
+  rn.links[4] = NULL;
   return rn;
 }
 

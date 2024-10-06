@@ -7,8 +7,9 @@ typedef struct room_node
   room_node;
 
 struct room_node {
-  room_node** links;
-  unsigned char num_links;
+  room_node* links[4];
+  // int x;
+  // int y;
 };
 
 room_node new_root();
