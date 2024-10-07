@@ -1,12 +1,8 @@
 ﻿#include <iostream>
 #include <random>
-#include <vector>
 #include <algorithm>
 
 typedef struct Room Room;
-
-int allocs = 0;
-int frees = 0;
 
 enum Door {
   NORTH,
@@ -37,98 +33,111 @@ struct RoomConnection {
     isParent(false) {}
 };
 
+#define CONNECTIONS 4
+#define FREE_CONNECTIONS 3
+
 struct Room {
   static std::mt19937 rng;
   static std::uniform_int_distribution<int> distribution;
 
-  #define MAX_CONNECTIONS 4
-  RoomConnection connections[MAX_CONNECTIONS];
+  RoomConnection connections[CONNECTIONS];
   int x;
   int y;
 
   Room() : x(0), y(0) {}
+  ~Room() { destroySubtree(); }
 
-  ~Room() {
-    destroySubtree();
-  }
 
-  void addParentConnection(Door srcDoor, Room* dstRoom, Door dstDoor) {
-    RoomConnection& connection = this->connections[(int)srcDoor];
+  inline void addParentConnection(Door srcDoor, Room* dstRoom, Door dstDoor) {
+    auto& connection = this->connections[srcDoor];
     connection.destRoom = dstRoom;
     connection.destDoor = dstDoor;
     connection.isParent = true;
   }
 
-  void addConnection(Door srcDoor, Room* dstRoom, Door dstDoor) {
-    RoomConnection& connection = this->connections[(int)srcDoor];
+
+  inline void addConnection(Door srcDoor, Room* dstRoom, Door dstDoor) {
+    auto& connection = this->connections[srcDoor];
     connection.destRoom = dstRoom;
     connection.destDoor = dstDoor;
     connection.isParent = false;
   }
 
+
   void generateSubtree(int maxDepth) {
-    int door = 0;
+    int door {0};
+
+    // As the root room of the tree, generates 4 rooms and 
+    // creates a connection to each of those rooms. Then 
+    // generates the corresponding random subtree of rooms.
+    //
+    // A normal room can have [0-4] connections (including)
+    // its parent room connection, but the root room has
+    // always 4 connections.
 
     for(auto& connection : this->connections) {
-      Door thisDoor = (Door)door;
-      Door childDoor = getSymetric(thisDoor);
-      Room* child = new Room();
+      Door childDoor {getSymetric((Door)door)};
+      Room* child {new Room()};
+
+      child->addParentConnection(childDoor, this, (Door)door);
+      this->addConnection((Door)door, child, childDoor);
       
-      child->addParentConnection(childDoor, this, thisDoor);
-      connection.destDoor = childDoor;
-      connection.destRoom = child;
-      connection.isParent = false;
       child->generateSubtree(1, maxDepth);
+      ++door;
     }
   }
 
+
   void generateSubtree(int depth, int maxDepth) {
-    //Door unusedDoors[] = { UNSET, UNSET, UNSET };
-    std::vector<Door> unusedDoors;
+
+    // A non-root room has always one connection used to connect 
+    // itself with its parent. The idea here its to get a random 
+    // number of unused doors (places to stablish a connection) 
+    // and create connection to new rooms. 
     
-    for (int i = 0; i < MAX_CONNECTIONS; i++) {
+    Door unusedDoors[FREE_CONNECTIONS] = { UNSET, UNSET, UNSET };
+    int doors {0};
+
+    for (int i {0}; i < CONNECTIONS; ++i) {
       if (this->connections[i].destRoom == nullptr) {
-        unusedDoors.push_back((Door)i);
+        unusedDoors[doors++] = (Door)i;
       }
     }
 
-    if (unusedDoors.empty()) return;
+    const int randConnections {std::min(doors, distribution(rng))};
+    if(randConnections == 0) { return; }
+    std::shuffle(std::begin(unusedDoors), std::end(unusedDoors), rng);
 
-    const int randConnections = std::min(static_cast<int>(unusedDoors.size()), distribution(rng));
-    if (randConnections == 0) return;
-    std::shuffle(unusedDoors.begin(), unusedDoors.end(), rng);
+    for (int i {0}; i < randConnections; ++i) {
+      Door iterDoor {unusedDoors[i]};
+      Door childDoor {getSymetric(iterDoor)};
+      Room* child {new Room()};
 
-    for (int i = 0; i < randConnections; i++) {
-      Door thisDoor = unusedDoors[i];
-      Door childDoor = getSymetric(thisDoor);
-      Room* child = new Room();
-      allocs += 1;
+      child->addParentConnection(childDoor, this, iterDoor);
+      this->addConnection(iterDoor, child, childDoor);
 
-      child->addParentConnection(childDoor, this, thisDoor);
-      this->addConnection(thisDoor, child, childDoor);
-
-      if ((depth + 1) < maxDepth) {
+      if((depth + 1) < maxDepth){
         child->generateSubtree(depth + 1, maxDepth);
       }
     }
-  }
+  } 
 
-  void destroySubtree() {
+
+  void destroySubtree(void) {
     for (auto& connection : this->connections) {
       if (connection.destRoom != nullptr && !connection.isParent) {
         connection.destRoom->destroySubtree();
         delete connection.destRoom;
         connection.destRoom = nullptr;
-        frees += 1;
       }
     }
   }
+
 
   void printSubtree(int depth) {
     std::string fmt;
     int port = 0;
 
-    // Setup the depth identation
     for (int i = 0; i < depth; i++)
       fmt += "\t";
 
@@ -162,14 +171,13 @@ struct Room {
 std::mt19937 Room::rng(std::random_device{}());
 std::uniform_int_distribution<int> Room::distribution(1, 4);
 
-int main() {
-    {
-      Room room;
-      room.generateSubtree(2);
-      room.printSubtree(0);
-    }
 
-    std::cout << "allocs: " << allocs << std::endl;
-    std::cout << "frees: " << frees << std::endl;
-    return 0;
+int main() {
+  {
+    Room room;
+    room.generateSubtree(10);
+    room.printSubtree(0);
+  }
+
+  return 0;
 }
