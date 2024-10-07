@@ -66,7 +66,24 @@ struct Room {
     connection.isParent = false;
   }
 
+  void generateSubtree(int maxDepth) {
+    int door = 0;
+
+    for(auto& connection : this->connections) {
+      Door thisDoor = (Door)door;
+      Door childDoor = getSymetric(thisDoor);
+      Room* child = new Room();
+      
+      child->addParentConnection(childDoor, this, thisDoor);
+      connection.destDoor = childDoor;
+      connection.destRoom = child;
+      connection.isParent = false;
+      child->generateSubtree(1, maxDepth);
+    }
+  }
+
   void generateSubtree(int depth, int maxDepth) {
+    //Door unusedDoors[] = { UNSET, UNSET, UNSET };
     std::vector<Door> unusedDoors;
     
     for (int i = 0; i < MAX_CONNECTIONS; i++) {
@@ -148,7 +165,7 @@ std::uniform_int_distribution<int> Room::distribution(1, 4);
 int main() {
     {
       Room room;
-      room.generateSubtree(0, 2);
+      room.generateSubtree(2);
       room.printSubtree(0);
     }
 
