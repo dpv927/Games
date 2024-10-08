@@ -2,6 +2,7 @@
 #define _H_TREE
 
 #include <random>
+#include <vector>
 #include "entry.hpp"
 
 #define FREE_LINKS 3
@@ -33,22 +34,12 @@ public:
   void printSubtree(int depth);
 
 private:
-  inline void addParentConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry) {
-    auto& connection = this->links[srcEntry];
-    connection.dstRoom = dstRoom;
-    connection.dstEntry = dstEntry;
-    connection.isParent = true;
-  }
-
-  inline void addConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry) {
-    auto& connection = this->links[srcEntry];
-    connection.dstRoom = dstRoom;
-    connection.dstEntry = dstEntry;
-    connection.isParent = false;
-  }
-
-
-  void generateSubtree(int depth, int maxDepth);
+  Node(int x, int y) : x(x), y(y) {}
+  
+  void generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes);
+  inline void addParentConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry);
+  inline void addConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry);
+  
   static std::uniform_int_distribution<int> distribution;
   static std::mt19937 rng;
 };
