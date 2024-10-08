@@ -2,48 +2,48 @@
 #define _H_TREE
 
 #include <random>
-#include "door.hpp"
+#include "entry.hpp"
 
-#define FREE_CONNECTIONS 3
-#define CONNECTIONS 4
+#define FREE_LINKS 3
+#define LINKS 4
 
-class Room {
+class Node {
   
-  struct Connection {
-    Room* destRoom;
-    Door destDoor;
+  struct Link {
+    Node* dstRoom;
+    Entry dstEntry;
     bool isParent;
 
-    Connection() : 
-      destRoom(nullptr),
-      destDoor(UNSET),
+    Link() : 
+      dstRoom(nullptr),
+      dstEntry(UNSET),
       isParent(false) {}
   };
 
 public:
-  Connection connections[CONNECTIONS];
+  Link links[LINKS];
   int x;
   int y;
 
-  Room() : x(0), y(0) {}
-  ~Room() { destroySubtree(); }
+  Node() : x(0), y(0) {}
+  ~Node() { destroySubtree(); }
 
   void generateSubtree(int maxDepth);
   void destroySubtree(void);
   void printSubtree(int depth);
 
 private:
-  inline void addParentConnection(Door srcDoor, Room* dstRoom, Door dstDoor) {
-    auto& connection = this->connections[srcDoor];
-    connection.destRoom = dstRoom;
-    connection.destDoor = dstDoor;
+  inline void addParentConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry) {
+    auto& connection = this->links[srcEntry];
+    connection.dstRoom = dstRoom;
+    connection.dstEntry = dstEntry;
     connection.isParent = true;
   }
 
-  inline void addConnection(Door srcDoor, Room* dstRoom, Door dstDoor) {
-    auto& connection = this->connections[srcDoor];
-    connection.destRoom = dstRoom;
-    connection.destDoor = dstDoor;
+  inline void addConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry) {
+    auto& connection = this->links[srcEntry];
+    connection.dstRoom = dstRoom;
+    connection.dstEntry = dstEntry;
     connection.isParent = false;
   }
 

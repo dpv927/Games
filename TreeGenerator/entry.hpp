@@ -3,7 +3,7 @@
 
 #include <utility>
 
-enum Door {
+enum Entry {
   NORTH,
   EAST,
   SOUTH,
@@ -11,8 +11,8 @@ enum Door {
   UNSET
 };
 
-inline Door getSymetric(Door door) {
-  switch (door) {
+inline Entry getSymetric(Entry e) {
+  switch (e) {
   case NORTH: return SOUTH;
   case EAST:  return WEST;
   case SOUTH: return NORTH;
@@ -21,8 +21,8 @@ inline Door getSymetric(Door door) {
   }
 }
 
-inline std::pair<int, int> getOffset(Door door) {
-  switch (door) {
+inline std::pair<int, int> getOffset(Entry e) {
+  switch (e) {
   case NORTH: return std::make_pair(0,1);
   case EAST:  return std::make_pair(1,0);
   case SOUTH: return std::make_pair(0,-1);
