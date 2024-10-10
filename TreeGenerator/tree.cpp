@@ -52,6 +52,8 @@ void Node::generateSubtree(int maxDepth) {
   for(auto& link : this->links) {
     link.dstRoom->generateSubtree(1, maxDepth, nodes);
   }
+
+  // nodes.clear();
 }
 
 void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
@@ -60,21 +62,25 @@ void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
   // itself with its parent. The idea here its to get a random 
   // number of unused doors (places to stablish a connection) 
   // and create connection to new rooms. 
-  // TODO This must be a vector. 
-  // TODO This now has unknown size [0-3]
-  //
-  Entry unusedLinks[FREE_LINKS] = { UNSET, UNSET, UNSET };
+  std::vector<Entry> unusedLinks(FREE_LINKS);
   int doors {0};
 
-  for (int i {0}; i < LINKS; ++i) {
-    if (this->links[i].dstRoom == nullptr) {
-      unusedLinks[doors++] = (Entry)i;
+  for(int i = 0; i < LINKS; i++) {
+    if(this->links[i].dstRoom == nullptr) {
+      unusedLinks.push_back((Entry)i);
+      ++doors;
     }
+  }
+
+  if(doors == 0) {
+    // All entries are 
+    // occupied.
+    return;
   }
 
   const int randLinks {std::min(doors, distribution(rng))};
   if(randLinks == 0) { return; }
-  std::shuffle(std::begin(unusedLinks), std::end(unusedLinks), rng);
+  std::shuffle(unusedLinks.begin(), unusedLinks.end(), rng);
 
   for (int i {0}; i < randLinks; ++i) {
     Entry iterEntry {unusedLinks[i]};
@@ -87,26 +93,28 @@ void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
     Node* child {nullptr};
     for(auto& node : nodes) {
       if(node->x == offset.first && node->y == offset.second) {
-        // A node already exists at the same location we want
-        // to create a new node. Instead of creating a new node,
-        // just link the current node with the existing one.
+        // In case we found an already exsistent node in the 
+        // target coordinates, just exit.
         child = node;
         break;
       }
     }
 
+    // TODO When child != nullptr, randomly decide if creating a link
+    // to that node or just do nothing.
+
     if(child == nullptr) {
-      // If there are no nodes at the coordinates that we need to 
-      // use, just create a new node.
+      // Only create a new node if there are not any other nodes 
+      // at the target coordinates.
       child = new Node(offset.first, offset.second);
       nodes.push_back(child);
-    }
 
-    child->addParentConnection(childEntry, this, iterEntry);
-    this->addConnection(iterEntry, child, childEntry);
+      child->addParentConnection(childEntry, this, iterEntry);
+      this->addConnection(iterEntry, child, childEntry);
 
-    if((depth + 1) < maxDepth){
-      child->generateSubtree(depth + 1, maxDepth, nodes);
+      if((depth + 1) < maxDepth){
+        child->generateSubtree(depth + 1, maxDepth, nodes);
+      }
     }
   }
 } 
