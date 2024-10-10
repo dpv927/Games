@@ -32,6 +32,7 @@ public:
   void generateSubtree(int maxDepth);
   void destroySubtree(void);
   void printSubtree(int depth);
+  void drawSubtree(Node* parent);
 
 private:
   Node(int x, int y) : x(x), y(y) {}

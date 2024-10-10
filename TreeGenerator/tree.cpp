@@ -1,8 +1,8 @@
 ﻿#include <iostream>
 #include <random>
 #include <algorithm>
-#include <utility>
 #include <vector>
+#include <raylib.h>
 #include "tree.hpp"
 #include "entry.hpp"
 
@@ -158,6 +158,31 @@ void Node::printSubtree(int depth) {
   for (auto& link : this->links) {
     if (link.dstRoom != nullptr && !link.isParent) {
       link.dstRoom->printSubtree(depth + 1);
+    }
+  }
+}
+
+void Node::drawSubtree(Node* parent) { 
+
+  int x = this->x * 200;
+  int y = this->y * 200;
+
+  DrawRectangle(x, y, 100, 100, WHITE);
+  if(parent != nullptr) {
+    Vector2 src;
+    src.x = x + 50;
+    src.y = y + 50;
+
+    Vector2 dst;
+    dst.x = (parent->x * 200) + 50;
+    dst.y = (parent->y * 200) + 50;
+
+    DrawLineEx(src, dst, 4.0, BLUE);  
+  }
+
+  for (auto& link : this->links) {
+    if (link.dstRoom != nullptr && !link.isParent) {
+      link.dstRoom->drawSubtree(this);
     }
   }
 }
