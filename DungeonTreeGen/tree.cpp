@@ -1,4 +1,5 @@
-﻿#include <iostream>
+﻿#include <cstdio>
+#include <iostream>
 #include <random>
 #include <algorithm>
 #include <vector>
@@ -6,7 +7,7 @@
 #include "tree.hpp"
 #include "entry.hpp"
 
-std::uniform_int_distribution<int> Node::distribution(1, 4);
+std::uniform_int_distribution<int> Node::distribution(1, 3);
 std::mt19937 Node::rng(std::random_device{}());
 
 
@@ -35,6 +36,7 @@ void Node::generateSubtree(int maxDepth) {
   // A normal room can have [0-4] connections (including)
   // its parent room connection, but the root room has
   // always 4 connections.
+  nodes.push_back(this);
 
   for(auto& link : this->links) {
     Entry iterEntry {(Entry)entry};
@@ -52,8 +54,6 @@ void Node::generateSubtree(int maxDepth) {
   for(auto& link : this->links) {
     link.dstRoom->generateSubtree(1, maxDepth, nodes);
   }
-
-  // nodes.clear();
 }
 
 void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
@@ -99,9 +99,6 @@ void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
         break;
       }
     }
-
-    // TODO When child != nullptr, randomly decide if creating a link
-    // to that node or just do nothing.
 
     if(child == nullptr) {
       // Only create a new node if there are not any other nodes 
@@ -162,27 +159,35 @@ void Node::printSubtree(int depth) {
   }
 }
 
-void Node::drawSubtree(Node* parent) { 
+void Node::drawSubtree(Node* target) { 
 
   int x = this->x * 200;
   int y = this->y * 200;
 
-  DrawRectangle(x, y, 100, 100, WHITE);
-  if(parent != nullptr) {
-    Vector2 src;
-    src.x = x + 50;
-    src.y = y + 50;
+  /*if(this != target) {
+    DrawRectangle(x, y, 100, 100, WHITE);
+  } else {
+    DrawRectangle(x, y, 100, 100, WHITE);
+  }*/
 
-    Vector2 dst;
-    dst.x = (parent->x * 200) + 50;
-    dst.y = (parent->y * 200) + 50;
-
-    DrawLineEx(src, dst, 4.0, BLUE);  
-  }
+  Vector2 src;
+  Vector2 dst;
+  src.x = x + 50;
+  src.y = y + 50;
 
   for (auto& link : this->links) {
     if (link.dstRoom != nullptr && !link.isParent) {
+      dst.x = (link.dstRoom->x * 200) + 50;
+      dst.y = (link.dstRoom->y * 200) + 50;
+      DrawLineEx(src, dst, 20.0, WHITE);
+      
       link.dstRoom->drawSubtree(this);
     }
+  }
+
+  if(this != target) {
+    DrawRectangle(x, y, 100, 100, WHITE);
+  } else {
+    DrawRectangle(x, y, 100, 100, PURPLE);
   }
 }

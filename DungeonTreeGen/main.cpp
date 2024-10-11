@@ -11,7 +11,7 @@ int main(void) {
   SetTraceLogLevel(LOG_ERROR);
 
   Camera2D camera = {
-    .offset = {0.,0.},
+    .offset = {750.,750.},
     .target = {0.,0.},
     .rotation = 0.,
     .zoom = 1.,
@@ -27,7 +27,7 @@ int main(void) {
     BeginDrawing();
     BeginMode2D(camera);
     ClearBackground(BLACK);
-    room.drawSubtree(nullptr);
+    room.drawSubtree(&room);
     EndDrawing();
   }
 
