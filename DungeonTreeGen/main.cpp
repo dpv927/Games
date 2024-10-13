@@ -11,10 +11,10 @@ int main(void) {
   SetTraceLogLevel(LOG_ERROR);
 
   Camera2D camera = {
-    .offset = {750.,750.},
-    .target = {0.,0.},
-    .rotation = 0.,
-    .zoom = 1.,
+    .offset = {750.0f,750.0f},
+    .target = {0.0f, 0.0f},
+    .rotation = 0.0f,
+    .zoom = 1.0f,
   };
 
   while(!WindowShouldClose()) {
@@ -25,9 +25,10 @@ int main(void) {
     if(IsKeyDown(KEY_A)) { camera.target.x -= 25.; }
 
     BeginDrawing();
-    BeginMode2D(camera);
     ClearBackground(BLACK);
+    BeginMode2D(camera);
     room.drawSubtree(&room);
+    EndMode2D();
     EndDrawing();
   }
 

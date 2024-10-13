@@ -1,5 +1,6 @@
 ﻿#include <cstdio>
 #include <iostream>
+#include <ostream>
 #include <random>
 #include <algorithm>
 #include <vector>
@@ -65,23 +66,16 @@ void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
   std::vector<Entry> unusedLinks(FREE_LINKS);
   int doors {0};
 
-  for(int i = 0; i < LINKS; i++) {
+  for(int i = 0; i < LINKS; ++i) {
     if(this->links[i].dstRoom == nullptr) {
       unusedLinks.push_back((Entry)i);
       ++doors;
     }
   }
 
-  if(doors == 0) {
-    // All entries are 
-    // occupied.
-    return;
-  }
-
   const int randLinks {std::min(doors, distribution(rng))};
-  if(randLinks == 0) { return; }
   std::shuffle(unusedLinks.begin(), unusedLinks.end(), rng);
-
+  
   for (int i {0}; i < randLinks; ++i) {
     Entry iterEntry {unusedLinks[i]};
     Entry childEntry {getSymetric(iterEntry)};
@@ -90,31 +84,27 @@ void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
     offset.first += this->x;
     offset.second += this->y;
 
-    Node* child {nullptr};
     for(auto& node : nodes) {
       if(node->x == offset.first && node->y == offset.second) {
         // In case we found an already exsistent node in the 
-        // target coordinates, just exit.
-        child = node;
-        break;
+        // target coordinates, abort the creation of a new node.
+        return;
       }
     }
 
-    if(child == nullptr) {
-      // Only create a new node if there are not any other nodes 
-      // at the target coordinates.
-      child = new Node(offset.first, offset.second);
-      nodes.push_back(child);
+    // Only create a new node if there are not any other nodes 
+    // at the target coordinates.
+    Node* child = new Node(offset.first, offset.second);
+    nodes.push_back(child);
 
-      child->addParentConnection(childEntry, this, iterEntry);
-      this->addConnection(iterEntry, child, childEntry);
+    child->addParentConnection(childEntry, this, iterEntry);
+    this->addConnection(iterEntry, child, childEntry);
 
-      if((depth + 1) < maxDepth){
-        child->generateSubtree(depth + 1, maxDepth, nodes);
-      }
+    if((depth + 1) < maxDepth){
+      child->generateSubtree(depth + 1, maxDepth, nodes);
     }
   }
-} 
+}
 
 void Node::destroySubtree(void) {
   for (auto& link : this->links) {
@@ -159,35 +149,31 @@ void Node::printSubtree(int depth) {
   }
 }
 
+const int RoomDim = 100;
+
 void Node::drawSubtree(Node* target) { 
 
-  int x = this->x * 200;
-  int y = this->y * 200;
-
-  /*if(this != target) {
-    DrawRectangle(x, y, 100, 100, WHITE);
-  } else {
-    DrawRectangle(x, y, 100, 100, WHITE);
-  }*/
+  int x = this->x * (RoomDim << 1);
+  int y = this->y * (RoomDim << 1);
 
   Vector2 src;
   Vector2 dst;
-  src.x = x + 50;
-  src.y = y + 50;
+  src.x = x + (RoomDim >> 1);
+  src.y = y + (RoomDim >> 1);
 
   for (auto& link : this->links) {
     if (link.dstRoom != nullptr && !link.isParent) {
-      dst.x = (link.dstRoom->x * 200) + 50;
-      dst.y = (link.dstRoom->y * 200) + 50;
-      DrawLineEx(src, dst, 20.0, WHITE);
+      dst.x = (link.dstRoom->x * (RoomDim << 1)) + (RoomDim >> 1);
+      dst.y = (link.dstRoom->y * (RoomDim << 1)) + (RoomDim >> 1);
       
+      DrawLineEx(src, dst, 10.0, WHITE);
       link.dstRoom->drawSubtree(this);
     }
   }
 
   if(this != target) {
-    DrawRectangle(x, y, 100, 100, WHITE);
+    DrawRectangleLines(x, y, RoomDim, RoomDim, WHITE);
   } else {
-    DrawRectangle(x, y, 100, 100, PURPLE);
+    DrawRectangle(x, y, RoomDim, RoomDim, PURPLE);
   }
 }
