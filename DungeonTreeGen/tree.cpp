@@ -1,6 +1,4 @@
-﻿#include <cstdio>
-#include <iostream>
-#include <ostream>
+﻿#include <iostream>
 #include <random>
 #include <algorithm>
 #include <vector>
@@ -82,6 +80,7 @@ void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) 
       if(node->x == offset.first && node->y == offset.second) {
         // In case we found an already exsistent node in the 
         // target coordinates, abort the creation of a new node.
+        // https://www.youtube.com/watch?v=8WVBT7FrgJI
         return;
       }
     }
