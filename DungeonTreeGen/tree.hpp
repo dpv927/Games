@@ -8,20 +8,25 @@
 #define FREE_LINKS 3
 #define LINKS 4
 
-class Node {
+struct Node {
   
   struct Link {
-    Node* dstRoom;
-    Entry dstEntry;
-    bool isParent;
+    
+    Node* dst_room;
+    Entry dst_entry;
+    
+    enum LinkType {
+      UNSET_LINK,
+      CHILD,
+      PARENT,
+    } link_type;
 
     Link() : 
-      dstRoom(nullptr),
-      dstEntry(UNSET),
-      isParent(false) {}
+      dst_room(nullptr),
+      dst_entry(UNSET),
+      link_type(UNSET_LINK) {}
   };
 
-public:
   Link links[LINKS];
   int x;
   int y;
@@ -29,17 +34,16 @@ public:
   Node() : x(0), y(0) {}
   ~Node() { destroySubtree(); }
 
-  void generateSubtree(int maxDepth);
+  void generateSubtree(int max_depth);
   void destroySubtree(void);
   void printSubtree(int depth);
-  void drawSubtree(Node* parent);
+  void drawSubtree(void);
 
 private:
   Node(int x, int y) : x(x), y(y) {}
   
-  void generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes);
-  inline void addParentConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry);
-  inline void addConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry);
+  void generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes);
+  inline void addConnection(Entry src_entry, Node* dst_room, Entry dst_entry, Link::LinkType link_type);
   
   static std::uniform_int_distribution<int> distribution;
   static std::mt19937 rng;

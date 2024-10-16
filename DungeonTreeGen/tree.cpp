@@ -12,22 +12,16 @@ std::uniform_int_distribution<int> Node::distribution(1, 3);
 std::mt19937 Node::rng(std::random_device{}());
 
 
-inline void Node::addParentConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry) {
-  auto& connection = this->links[srcEntry];
-  connection.dstRoom = dstRoom;
-  connection.dstEntry = dstEntry;
-  connection.isParent = true;
+inline void Node::addConnection(Entry src_entry, Node* dst_room, Entry dst_entry, Link::LinkType link_type) {
+  auto& connection = this->links[src_entry];
+  connection.link_type = link_type;
+  connection.dst_room = dst_room;
+  connection.dst_entry = dst_entry;
 }
 
-inline void Node::addConnection(Entry srcEntry, Node* dstRoom, Entry dstEntry) {
-  auto& connection = this->links[srcEntry];
-  connection.dstRoom = dstRoom;
-  connection.dstEntry = dstEntry;
-  connection.isParent = false;
-}
-
-void Node::generateSubtree(int maxDepth) {
+void Node::generateSubtree(int max_depth) {
   std::vector<Node*> nodes;
+  nodes.reserve(max_depth * 5);
   int entry {0};
 
   // As the root room of the tree, generates 4 rooms and 
@@ -46,18 +40,18 @@ void Node::generateSubtree(int maxDepth) {
     std::pair<int,int> offset = getOffset(iterEntry);
     Node* child {new Node(this->x + offset.first, this->y + offset.second)};
 
-    child->addParentConnection(childEntry, this, iterEntry);
-    this->addConnection(iterEntry, child, childEntry);
+    child->addConnection(childEntry, this, iterEntry, Link::LinkType::PARENT);
+    this->addConnection(iterEntry, child, childEntry, Link::LinkType::CHILD);
     nodes.push_back(child);
     ++entry;
   }
 
   for(auto& link : this->links) {
-    link.dstRoom->generateSubtree(1, maxDepth, nodes);
+    link.dst_room->generateSubtree(1, max_depth, nodes);
   }
 }
 
-void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
+void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) {
 
   // A non-root room has always one connection used to connect 
   // itself with its parent. The idea here its to get a random 
@@ -67,7 +61,7 @@ void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
   int doors {0};
 
   for(int i = 0; i < LINKS; ++i) {
-    if(this->links[i].dstRoom == nullptr) {
+    if(this->links[i].dst_room == nullptr) {
       unusedLinks.push_back((Entry)i);
       ++doors;
     }
@@ -97,21 +91,21 @@ void Node::generateSubtree(int depth, int maxDepth, std::vector<Node*>& nodes) {
     Node* child = new Node(offset.first, offset.second);
     nodes.push_back(child);
 
-    child->addParentConnection(childEntry, this, iterEntry);
-    this->addConnection(iterEntry, child, childEntry);
+    child->addConnection(childEntry, this, iterEntry, Link::LinkType::PARENT);
+    this->addConnection(iterEntry, child, childEntry, Link::LinkType::CHILD);
 
-    if((depth + 1) < maxDepth){
-      child->generateSubtree(depth + 1, maxDepth, nodes);
+    if((depth + 1) < max_depth){
+      child->generateSubtree(depth + 1, max_depth, nodes);
     }
   }
 }
 
 void Node::destroySubtree(void) {
   for (auto& link : this->links) {
-    if (link.dstRoom != nullptr && !link.isParent) {
-      link.dstRoom->destroySubtree();
-      delete link.dstRoom;
-      link.dstRoom = nullptr;
+    if (link.dst_room != nullptr && (link.link_type == Link::LinkType::CHILD)) {
+      link.dst_room->destroySubtree();
+      delete link.dst_room;
+      link.dst_room = nullptr;
     }
   }
 }
@@ -128,7 +122,7 @@ void Node::printSubtree(int depth) {
     << ">\033[0m" << std::endl;
        
   for (auto& link : this->links) {
-    if (link.dstRoom == nullptr) {
+    if (link.dst_room == nullptr) {
       std::cout << fmt
         << "[" << port << "] = @null"
         << std::endl;
@@ -136,44 +130,44 @@ void Node::printSubtree(int depth) {
     } else {
       std::cout << fmt 
         << "[" << port << "] = @"
-        << (unsigned long long)link.dstRoom
+        << (unsigned long long)link.dst_room
         << std::endl;
     }
     ++port;
   }
 
   for (auto& link : this->links) {
-    if (link.dstRoom != nullptr && !link.isParent) {
-      link.dstRoom->printSubtree(depth + 1);
+    if (link.dst_room != nullptr && (link.link_type == Link::LinkType::CHILD)) {
+      link.dst_room->printSubtree(depth + 1);
     }
   }
 }
 
+
 const int RoomDim = 100;
+constexpr const int RoomDimH = RoomDim >> 1;
+constexpr const int RoomDimD = RoomDim << 1;
+const int LineThickness = 10.0;
 
-void Node::drawSubtree(Node* target) { 
+void Node::drawSubtree(void) { 
 
-  int x = this->x * (RoomDim << 1);
-  int y = this->y * (RoomDim << 1);
+  int x = this->x * RoomDimD;
+  int y = this->y * RoomDimD;
 
   Vector2 src;
   Vector2 dst;
-  src.x = x + (RoomDim >> 1);
-  src.y = y + (RoomDim >> 1);
+  src.x = x + RoomDimH;
+  src.y = y + RoomDimH;
 
   for (auto& link : this->links) {
-    if (link.dstRoom != nullptr && !link.isParent) {
-      dst.x = (link.dstRoom->x * (RoomDim << 1)) + (RoomDim >> 1);
-      dst.y = (link.dstRoom->y * (RoomDim << 1)) + (RoomDim >> 1);
+    if (link.dst_room != nullptr && (link.link_type == Link::LinkType::CHILD)) {
+      dst.x = (link.dst_room->x * RoomDimD) + RoomDimH;
+      dst.y = (link.dst_room->y * RoomDimD) + RoomDimH;
       
-      DrawLineEx(src, dst, 10.0, WHITE);
-      link.dstRoom->drawSubtree(this);
+      DrawLineEx(src, dst, LineThickness, WHITE);
+      link.dst_room->drawSubtree();
     }
   }
 
-  if(this != target) {
-    DrawRectangleLines(x, y, RoomDim, RoomDim, WHITE);
-  } else {
-    DrawRectangle(x, y, RoomDim, RoomDim, PURPLE);
-  }
+  DrawRectangleLines(x, y, RoomDim, RoomDim, WHITE);
 }
