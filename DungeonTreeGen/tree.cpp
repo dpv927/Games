@@ -8,17 +8,17 @@
 
 std::uniform_int_distribution<int> Node::distribution(1, 3);
 std::mt19937 Node::rng(std::random_device{}());
-int Node::max_depth = 0;
+int Node::max_gen_depth = 0;
 
 
-inline void Node::addConnection(Entry src_entry, Node* dst_room, Entry dst_entry, Link::LinkType link_type) {
+inline void Node::add_connection(Entry src_entry, Node* dst_room, Entry dst_entry, Link::LinkType link_type) {
   auto& connection = this->links[src_entry];
   connection.link_type = link_type;
   connection.dst_room = dst_room;
   connection.dst_entry = dst_entry;
 }
 
-std::vector<Node*> Node::generateSubtree(int max_depth) {
+std::vector<Node*> Node::generate_subtree(int max_depth) {
   std::vector<Node*> nodes;
   nodes.reserve(max_depth * 5);
   int entry {0};
@@ -39,19 +39,19 @@ std::vector<Node*> Node::generateSubtree(int max_depth) {
     std::pair<int,int> offset = getOffset(iterEntry);
     Node* child {new Node(this->x + offset.first, this->y + offset.second, depth)};
 
-    child->addConnection(childEntry, this, iterEntry, Link::LinkType::PARENT);
-    this->addConnection(iterEntry, child, childEntry, Link::LinkType::CHILD);
+    child->add_connection(childEntry, this, iterEntry, Link::LinkType::PARENT);
+    this->add_connection(iterEntry, child, childEntry, Link::LinkType::CHILD);
     nodes.push_back(child);
     ++entry;
   }
 
   for(auto& link : this->links) {
-    link.dst_room->generateSubtree(1, max_depth, nodes);
+    link.dst_room->generate_subtree(1, max_depth, nodes);
   }
   return nodes;
 }
 
-void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) {
+void Node::generate_subtree(int depth, int max_depth, std::vector<Node*>& nodes) {
 
   // A non-root room has always one connection used to connect 
   // itself with its parent. The idea here its to get a random 
@@ -67,7 +67,8 @@ void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) 
     }
   }
 
-  const int randLinks {std::min(doors, distribution(rng))};
+  //const int randLinks {std::min(doors, distribution(rng))};
+  const int randLinks { distribution(rng) };
   std::shuffle(unusedLinks.begin(), unusedLinks.end(), rng);
   
   for (int i {0}; i < randLinks; ++i) {
@@ -92,26 +93,26 @@ void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) 
     Node* child = new Node(offset.first, offset.second, depth);
     nodes.push_back(child);
 
-    child->addConnection(childEntry, this, iterEntry, Link::LinkType::PARENT);
-    this->addConnection(iterEntry, child, childEntry, Link::LinkType::CHILD);
+    child->add_connection(childEntry, this, iterEntry, Link::LinkType::PARENT);
+    this->add_connection(iterEntry, child, childEntry, Link::LinkType::CHILD);
 
     if((depth + 1) < max_depth){
-      child->generateSubtree(depth + 1, max_depth, nodes);
+      child->generate_subtree(depth + 1, max_depth, nodes);
     }
   }
 }
 
-void Node::destroySubtree(void) {
+void Node::destroy_subtree(void) {
   for (auto& link : this->links) {
     if (link.dst_room != nullptr && (link.link_type == Link::LinkType::CHILD)) {
-      link.dst_room->destroySubtree();
+      link.dst_room->destroy_subtree();
       delete link.dst_room;
       link.dst_room = nullptr;
     }
   }
 }
 
-void Node::printSubtree(int depth) {
+void Node::print_subtree(int depth) {
   std::string fmt;
   int port = 0;
 
@@ -139,7 +140,7 @@ void Node::printSubtree(int depth) {
 
   for (auto& link : this->links) {
     if (link.dst_room != nullptr && (link.link_type == Link::LinkType::CHILD)) {
-      link.dst_room->printSubtree(depth + 1);
+      link.dst_room->print_subtree(depth + 1);
     }
   }
 }
@@ -150,7 +151,7 @@ constexpr const int RoomDimH = RoomDim >> 1;
 constexpr const int RoomDimD = RoomDim << 1;
 const int LineThickness = 2.0;
 
-void Node::drawSubtree(void) { 
+void Node::draw_subtree(void) { 
 
   int x = this->x * RoomDimD;
   int y = this->y * RoomDimD;
@@ -166,13 +167,12 @@ void Node::drawSubtree(void) {
       dst.y = (link.dst_room->y * RoomDimD) + RoomDimH;
       
       DrawLineEx(src, dst, LineThickness, WHITE);
-      link.dst_room->drawSubtree();
+      link.dst_room->draw_subtree();
     }
   }
 
   switch(this->node_type) {
     case Node::NodeType::NORMAL: { DrawRectangle(x, y, RoomDim, RoomDim, WHITE); break; }
-    case Node::NodeType::MAIN:   { DrawRectangle(x, y, RoomDim, RoomDim, BLUE); break; }
     case Node::NodeType::BOSS:   { DrawRectangle(x, y, RoomDim, RoomDim, GREEN); break; } 
   }
 }

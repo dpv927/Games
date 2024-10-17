@@ -4,30 +4,28 @@
 
 int main(void) {
   Node room;
-  auto nodes = room.generateSubtree(10);
+  auto nodes = room.generate_subtree(10);
   // room.printSubtree(0);
 
-  // Filter only the nodes at the max depth
+  // The 'nodes' vector contains pointers to all of the 
+  // generated nodes at the connection tree.
+  //
+  // Here, from all the nodes, filter only the nodes at 
+  // the max depth (at the bottom of the tree).
   for(auto it = nodes.begin(); it != nodes.end(); ++it) {
-    if((*it)->depth != Node::max_depth) {
+    if((*it)->depth != Node::max_gen_depth) {
       it = nodes.erase(it);
       --it;
-    } else {
-      (*it)->node_type = Node::NodeType::MAIN;
-    }
+    }  
   }
 
-  // Randomize the nodes and select some rooms as 
-  // boss rooms. TODO select a % of all nodes, not
-  // a count.
+  // Shuffle the max depth nodes and select 15% of them
+  // as boss rooms. 
   std::mt19937 rng(std::random_device{}());
-  int selected_nodes {0};
   std::shuffle(nodes.begin(), nodes.end(), rng);
-  
-  for(auto& node : nodes) {
-    if(selected_nodes == 3) { break; }
-    node->node_type = Node::NodeType::BOSS;
-    ++selected_nodes;
+
+  for(int i = 0; i < std::round(nodes.size() * 0.15); ++i) {
+    nodes[i]->node_type = Node::NodeType::BOSS;
   }
 
 
@@ -36,10 +34,10 @@ int main(void) {
   SetTraceLogLevel(LOG_ERROR);
 
   Camera2D camera = {
-    .offset = {500.0f,500.0f},
+    .offset = {750.0f,750.0f},
     .target = {0.0f, 0.0f},
     .rotation = 0.0f,
-    .zoom = 1.0f,
+    .zoom = 1.5f,
   };
 
   while(!WindowShouldClose()) {
@@ -52,7 +50,7 @@ int main(void) {
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
-    room.drawSubtree();
+    room.draw_subtree();
     DrawRectangle(0, 0, 40, 40, PINK);
     EndMode2D();
     EndDrawing();
