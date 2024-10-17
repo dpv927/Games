@@ -27,23 +27,35 @@ struct Node {
       link_type(UNSET_LINK) {}
   };
 
+  static int max_depth;
   Link links[LINKS];
+  int depth;
   int x;
   int y;
 
-  Node() : x(0), y(0) {}
+  enum NodeType {
+    MAIN,
+    BOSS,
+    NORMAL,
+  } node_type;
+
+  Node() : x(0), y(0), depth(0), node_type(NORMAL) {}
   ~Node() { destroySubtree(); }
 
-  void generateSubtree(int max_depth);
+  std::vector<Node*> generateSubtree(int max_depth);
   void destroySubtree(void);
   void printSubtree(int depth);
   void drawSubtree(void);
 
 private:
-  Node(int x, int y) : x(x), y(y) {}
+  Node(int x, int y, int depth) : x(x), y(y), depth(depth), node_type(NORMAL) {
+    if(depth > max_depth) {
+      max_depth = depth;
+    }
+  }
   
-  void generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes);
   inline void addConnection(Entry src_entry, Node* dst_room, Entry dst_entry, Link::LinkType link_type);
+  void generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes);
   
   static std::uniform_int_distribution<int> distribution;
   static std::mt19937 rng;

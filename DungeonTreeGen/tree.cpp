@@ -8,6 +8,7 @@
 
 std::uniform_int_distribution<int> Node::distribution(1, 3);
 std::mt19937 Node::rng(std::random_device{}());
+int Node::max_depth = 0;
 
 
 inline void Node::addConnection(Entry src_entry, Node* dst_room, Entry dst_entry, Link::LinkType link_type) {
@@ -17,7 +18,7 @@ inline void Node::addConnection(Entry src_entry, Node* dst_room, Entry dst_entry
   connection.dst_entry = dst_entry;
 }
 
-void Node::generateSubtree(int max_depth) {
+std::vector<Node*> Node::generateSubtree(int max_depth) {
   std::vector<Node*> nodes;
   nodes.reserve(max_depth * 5);
   int entry {0};
@@ -36,7 +37,7 @@ void Node::generateSubtree(int max_depth) {
     Entry childEntry {getSymetric(iterEntry)};
 
     std::pair<int,int> offset = getOffset(iterEntry);
-    Node* child {new Node(this->x + offset.first, this->y + offset.second)};
+    Node* child {new Node(this->x + offset.first, this->y + offset.second, depth)};
 
     child->addConnection(childEntry, this, iterEntry, Link::LinkType::PARENT);
     this->addConnection(iterEntry, child, childEntry, Link::LinkType::CHILD);
@@ -47,6 +48,7 @@ void Node::generateSubtree(int max_depth) {
   for(auto& link : this->links) {
     link.dst_room->generateSubtree(1, max_depth, nodes);
   }
+  return nodes;
 }
 
 void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) {
@@ -55,7 +57,7 @@ void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) 
   // itself with its parent. The idea here its to get a random 
   // number of unused doors (places to stablish a connection) 
   // and create connection to new rooms. 
-  std::vector<Entry> unusedLinks(FREE_LINKS);
+  std::vector<Entry> unusedLinks;
   int doors {0};
 
   for(int i = 0; i < LINKS; ++i) {
@@ -87,7 +89,7 @@ void Node::generateSubtree(int depth, int max_depth, std::vector<Node*>& nodes) 
 
     // Only create a new node if there are not any other nodes 
     // at the target coordinates.
-    Node* child = new Node(offset.first, offset.second);
+    Node* child = new Node(offset.first, offset.second, depth);
     nodes.push_back(child);
 
     child->addConnection(childEntry, this, iterEntry, Link::LinkType::PARENT);
@@ -143,10 +145,10 @@ void Node::printSubtree(int depth) {
 }
 
 
-const int RoomDim = 100;
+const int RoomDim = 40;
 constexpr const int RoomDimH = RoomDim >> 1;
 constexpr const int RoomDimD = RoomDim << 1;
-const int LineThickness = 10.0;
+const int LineThickness = 2.0;
 
 void Node::drawSubtree(void) { 
 
@@ -168,5 +170,9 @@ void Node::drawSubtree(void) {
     }
   }
 
-  DrawRectangleLines(x, y, RoomDim, RoomDim, WHITE);
+  switch(this->node_type) {
+    case Node::NodeType::NORMAL: { DrawRectangle(x, y, RoomDim, RoomDim, WHITE); break; }
+    case Node::NodeType::MAIN:   { DrawRectangle(x, y, RoomDim, RoomDim, BLUE); break; }
+    case Node::NodeType::BOSS:   { DrawRectangle(x, y, RoomDim, RoomDim, GREEN); break; } 
+  }
 }
