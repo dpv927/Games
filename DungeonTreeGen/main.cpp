@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <raylib.h>
+#include <iostream>
 #include "tree.hpp"
 
 int main(void) {
@@ -37,7 +38,7 @@ int main(void) {
     .offset = {750.0f,750.0f},
     .target = {0.0f, 0.0f},
     .rotation = 0.0f,
-    .zoom = 1.5f,
+    .zoom = 1.f,
   };
 
   while(!WindowShouldClose()) {
@@ -46,6 +47,16 @@ int main(void) {
     if(IsKeyDown(KEY_S)) { camera.target.y += 25.; }
     if(IsKeyDown(KEY_D)) { camera.target.x += 25.; }
     if(IsKeyDown(KEY_A)) { camera.target.x -= 25.; }
+    switch(static_cast<int>(GetMouseWheelMove())) {
+      case 1: 
+        camera.zoom += 0.2;
+        break;
+      case -1:
+        camera.zoom -= 0.2;
+        break;
+      default: 
+        break;
+    }
 
     BeginDrawing();
     ClearBackground(BLACK);
