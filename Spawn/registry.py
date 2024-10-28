@@ -27,7 +27,8 @@ def register_texture(texture_class):
 def load_textures():
     """ Load all class textures """
     for texture_class in texture_register:
-        texture_class.texture = rl.load_texture(texture_class.__name__ + ".png")
+        texture_class.texture = rl.load_texture("entities/" + texture_class.__name__ + ".png")
+        texture_class.update_texture_info(texture_class)
 
 
 def unload_textures():

@@ -1,7 +1,7 @@
 import pyray as rl 
 import random
 import registry
-from player import player_instance
+from entities.player import player_instance
 
 if __name__ == '__main__':
     window_width = 1000 
@@ -9,7 +9,6 @@ if __name__ == '__main__':
 
     rl.init_window(window_width, window_height, "Spawn")
     rl.set_target_fps(60)
-
 
     registry.load_entities_modules() 
     registry.load_textures()
@@ -21,7 +20,7 @@ if __name__ == '__main__':
     while(not rl.window_should_close()):
         player.move()
         rl.begin_drawing()
-        rl.clear_background(rl.BLACK)
+        rl.clear_background(rl.WHITE)
         entity.draw()
         player.draw()
         rl.end_drawing()
