@@ -18,7 +18,8 @@ class Player(TexturedEntity):
         move_x = int(rl.is_key_down(rl.KeyboardKey.KEY_D)) - int(rl.is_key_down(rl.KeyboardKey.KEY_A))
         move_y = int(rl.is_key_down(rl.KeyboardKey.KEY_S)) - int(rl.is_key_down(rl.KeyboardKey.KEY_W))
         movement = rl.vector2_normalize(rl.Vector2(move_x, move_y))
-        
+        self.change_sprite_direction(move_x, move_y)
+
         self.lerp_x += movement.x * self.speed.x
         self.lerp_y += movement.y * self.speed.y
         
@@ -32,5 +33,4 @@ class Player(TexturedEntity):
         self.lerp_y = y
 
 # Public player instance
-player_instance = Player()
 registry.register_texture(Player)

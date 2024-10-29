@@ -24,6 +24,14 @@ class TexturedEntity(Entity):
     sprite_width: int
     sprite_height: int
 
+    class Orientation():
+        DOWN      = 0
+        UP        = 1
+        LEFT      = 2
+        RIGHT     = 3
+        DIG_LEFT  = 4
+        DIG_RIGHT = 5
+
     def draw(self):
         rl.draw_texture_pro(
             self.texture,
@@ -43,4 +51,17 @@ class TexturedEntity(Entity):
         self.sprite_width  = self.texture.width/self.texture_directions
         self.sprite_height = self.sprite_width
         self.current_sprite = rl.Rectangle(0, 0, self.sprite_width, self.texture.height);
+
+    def change_sprite_direction(self, mx, my):
+        if (mx == 0 and my == 0) or (mx == 0 and my > 0):
+            self.current_sprite.x = TexturedEntity.Orientation.DOWN
+        elif (mx ==  0) and (my < 0):
+            self.current_sprite.x = TexturedEntity.Orientation.UP * self.sprite_width
+        elif (mx < 0 and my ==  0):
+            self.current_sprite.x = TexturedEntity.Orientation.LEFT * self.sprite_width
+        elif (mx > 0 and my ==  0):
+            self.current_sprite.x = TexturedEntity.Orientation.RIGHT * self.sprite_width
+        elif (mx < 0 and my !=  0):
+            self.current_sprite.x = TexturedEntity.Orientation.DIG_LEFT * self.sprite_width
+        else: self.current_sprite.x = TexturedEntity.Orientation.DIG_RIGHT * self.sprite_width
 

@@ -1,7 +1,8 @@
-from entities.player import player_instance as player
+import game
 import pyray as rl 
-import random
 import registry
+import random
+import math
 
 def scale_window():
     monitor = rl.get_current_monitor()
@@ -16,11 +17,15 @@ def scale_window():
     return width, height
 
 
+def random_point_at_circunference(cx, cy, radius):
+    alpha = 2 * math.pi * random.random()
+    px = radius * (math.cos(alpha) + cx)
+    py = radius * (math.sin(alpha) + cy)
+    return rl.Vector2(px, py)
+
+
 if __name__ == '__main__':
 
-    #cl = random.choice(list(registry.entity_register.values()))
-    #entity = cl()
-    
     # Load resources before creating the window
     registry.load_entities_modules() 
 
@@ -32,30 +37,25 @@ if __name__ == '__main__':
     # Player 2D camera
     camera = rl.Camera2D(rl.Vector2(w/2, h/2), rl.Vector2(0,0), 0, 1)
 
-    # Create a list with enemies arround the player
-    # TODO Create a function that spawns entities arround a 
-    # circle (out of the window)
-    enemies = []
     for i in range(10):
         entity_class = random.choice(list(registry.entity_register.values()))
         entity = entity_class()
-        enemies.append(entity)
+        entity.position = random_point_at_circunference(0,0,800)
+        game.enemies.append(entity)
 
     while(not rl.window_should_close()):
-        player.move()
-        camera.target.x = player.position.x
-        camera.target.y = player.position.y
-        
-        for enemy in enemies:
-            enemy.move()
-    
+        game.player.move()
+        camera.target.x = game.player.position.x
+        camera.target.y = game.player.position.y
+
         rl.begin_drawing()
         rl.clear_background(rl.BROWN)
         rl.begin_mode_2d(camera)
-        player.draw()
-    
-        for enemy in enemies:
+
+        for enemy in game.enemies:
+            enemy.move()
             enemy.draw()
+        game.player.draw()
 
         rl.end_mode_2d()
         rl.end_drawing()
