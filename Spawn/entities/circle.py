@@ -7,7 +7,7 @@ class Circle(Entity):
 
     def __init__(self):
         super().__init__(speed=rl.Vector2(6.5,6.5))
-        self.radius = 50.
+        self.radius = 25.
 
     def draw(self):
         rl.draw_circle_v(self.position, self.radius, rl.YELLOW)

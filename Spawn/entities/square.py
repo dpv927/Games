@@ -7,7 +7,7 @@ class Square(Entity):
 
     def __init__(self):
         super().__init__(speed=rl.Vector2(5,5))
-        self.width = 100
+        self.width = 50
 
     def draw(self):
         rl.draw_rectangle(int(self.position.x), int(self.position.y),

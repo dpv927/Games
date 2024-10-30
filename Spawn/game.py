@@ -16,6 +16,6 @@ def create_enemy(enemy_class, position):
     pass
 
 def create_particle(particle_class, position):
-    # Todo create particle and 
-    # register it at particles
+    particle = particle_class(position)
+    particles.append(particle)
     pass

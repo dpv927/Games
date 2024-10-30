@@ -1,7 +1,9 @@
 from entity import TexturedEntity
+from particles.dirt_particle import DirtParticle
 from buff import Buff
 import pyray as rl 
 import registry
+import game
 
 class Player(TexturedEntity):
 
@@ -13,12 +15,17 @@ class Player(TexturedEntity):
         self.lerp_x = self.position.x
         self.lerp_y = self.position.y
         self.buffs = []
+        self.width = 50
+        self.height = 50
 
     def move(self):
         move_x = int(rl.is_key_down(rl.KeyboardKey.KEY_D)) - int(rl.is_key_down(rl.KeyboardKey.KEY_A))
         move_y = int(rl.is_key_down(rl.KeyboardKey.KEY_S)) - int(rl.is_key_down(rl.KeyboardKey.KEY_W))
         movement = rl.vector2_normalize(rl.Vector2(move_x, move_y))
         self.change_sprite_direction(move_x, move_y)
+
+        if move_x != 0 or move_y !=0:
+            game.create_particle(DirtParticle, rl.Vector2(self.position.x, self.position.y))        
 
         self.lerp_x += movement.x * self.speed.x
         self.lerp_y += movement.y * self.speed.y

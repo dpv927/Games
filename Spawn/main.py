@@ -9,8 +9,8 @@ def scale_window():
     mon_height = rl.get_monitor_height(monitor)
     mon_width = rl.get_monitor_width(monitor)
     
-    width = int(mon_width * 0.5)
-    height = int(mon_height * 0.5)
+    width = int(mon_width * 0.8)
+    height = int(mon_height * 0.8)
     
     rl.set_window_position(int((mon_width - width)/2), int((mon_height - height)/2))
     rl.set_window_size(width, height)
@@ -52,12 +52,13 @@ if __name__ == '__main__':
         for enemy in game.enemies:
             enemy.move()
             enemy.draw()
-        game.player.draw()
 
         for particle in game.particles:
             particle.draw()
             particle.update()
-
+        game.particles = [p for p in game.particles if not p.is_done()]           
+    
+        game.player.draw()
         rl.end_mode_2d()
         rl.end_drawing()
 
