@@ -26,9 +26,6 @@ def random_point_at_circunference(cx, cy, radius):
 
 if __name__ == '__main__':
 
-    # Load resources before creating the window
-    registry.load_entities_modules() 
-
     rl.init_window(500, 500, "Spawn")
     rl.set_target_fps(60)
     w, h = scale_window()
@@ -38,9 +35,9 @@ if __name__ == '__main__':
     camera = rl.Camera2D(rl.Vector2(w/2, h/2), rl.Vector2(0,0), 0, 1)
 
     for i in range(10):
-        entity_class = random.choice(list(registry.entity_register.values()))
+        entity_class = random.choice(game.enemy_classes)
         entity = entity_class()
-        entity.position = random_point_at_circunference(0,0,800)
+        entity.position = random_point_at_circunference(0,0,w/2)
         game.enemies.append(entity)
 
     while(not rl.window_should_close()):
@@ -49,13 +46,17 @@ if __name__ == '__main__':
         camera.target.y = game.player.position.y
 
         rl.begin_drawing()
-        rl.clear_background(rl.BROWN)
+        rl.clear_background(rl.BEIGE)
         rl.begin_mode_2d(camera)
 
         for enemy in game.enemies:
             enemy.move()
             enemy.draw()
         game.player.draw()
+
+        for particle in game.particles:
+            particle.draw()
+            particle.update()
 
         rl.end_mode_2d()
         rl.end_drawing()
