@@ -6,7 +6,7 @@ import game
 class Square(Entity):
 
     def __init__(self):
-        super().__init__(speed=rl.Vector2(5,5))
+        super().__init__(speed=rl.Vector2(3,3))
         self.width = 50
 
     def draw(self):

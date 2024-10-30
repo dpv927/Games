@@ -6,7 +6,7 @@ import game
 class Circle(Entity):
 
     def __init__(self):
-        super().__init__(speed=rl.Vector2(6.5,6.5))
+        super().__init__(speed=rl.Vector2(4,4))
         self.radius = 25.
 
     def draw(self):

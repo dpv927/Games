@@ -11,10 +11,11 @@ def scale_window():
     
     width = int(mon_width * 0.8)
     height = int(mon_height * 0.8)
+    scale = mon_width/1366
     
     rl.set_window_position(int((mon_width - width)/2), int((mon_height - height)/2))
     rl.set_window_size(width, height)
-    return width, height
+    return width, height, scale
 
 
 def random_point_at_circunference(cx, cy, radius):
@@ -28,16 +29,16 @@ if __name__ == '__main__':
 
     rl.init_window(500, 500, "Spawn")
     rl.set_target_fps(60)
-    w, h = scale_window()
+    w, h, s = scale_window()
     registry.load_textures()
 
     # Player 2D camera
-    camera = rl.Camera2D(rl.Vector2(w/2, h/2), rl.Vector2(0,0), 0, 1)
+    camera = rl.Camera2D(rl.Vector2(w/2, h/2), rl.Vector2(0,0), 0, s)
 
     for i in range(10):
         entity_class = random.choice(game.enemy_classes)
         entity = entity_class()
-        entity.position = random_point_at_circunference(0,0,w/2)
+        entity.position = random_point_at_circunference(0,0,h/2)
         game.enemies.append(entity)
 
     while(not rl.window_should_close()):

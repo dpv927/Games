@@ -10,7 +10,6 @@ class Particle:
         self.position = position
         self.life_frames = life_frames
         self.frames = 0
-        game.particles.append(self)
 
     def draw(self):
         pass
