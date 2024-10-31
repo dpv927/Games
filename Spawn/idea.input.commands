@@ -1,0 +1,41 @@
+camera = rl.Camera2D(rl.Vector2(w/2, h/2), rl.Vector2(0,0), 0, s)
+    input_background = rl.Color(0,0,0,255)
+    input_foreground = rl.Color(255,255,255,200)
+    input_height = int(25 * s)
+    input_y = h - input_height
+    input_font_size = int(input_height/2)
+    input_string = ""
+    input_padding = int(7 * s)
+    register_command = False 
+
+
+    while(not rl.window_should_close()):
+        # Press '/' to input a command (enter command mode), and press 'ESC'
+        # to exit command mode (if active). 
+        if rl.is_key_pressed(rl.KeyboardKey.KEY_SLASH) and (not register_command):
+            register_command = True
+            input_string = ""
+        if rl.is_key_pressed(rl.KeyboardKey.KEY_ESCAPE) and register_command:
+            register_command = False
+            input_string = ""
+
+        if register_command: 
+            key = rl.get_char_pressed()
+            while(key > 0):
+                if (key >= 32) and (key <= 125):
+                    input_string += chr(key)
+                    key = rl.get_char_pressed()
+
+            if rl.is_key_pressed(rl.KeyboardKey.KEY_BACKSPACE) and input_string != "/":
+                input_string = input_string[:-1]
+            if rl.is_key_down(rl.KeyboardKey.KEY_ENTER):
+                # TODO Manage command
+                register_command = False
+                input_string = ""
+
+            rl.begin_drawing()
+            rl.draw_rectangle(0, input_y, w, input_height, input_background)
+            rl.draw_text(input_string + "_", input_padding, input_y + input_padding, input_font_size, input_foreground)            
+            rl.end_drawing()
+        else:
+            normal stuff ...

@@ -16,7 +16,7 @@ class Circle(Entity):
     def move(self):
         dist = rl.vector2_subtract(game.player.position, self.position)
         dist = rl.vector2_normalize(dist)
-        self.position.x += dist.x * self.speed.x;
-        self.position.y += dist.y * self.speed.y;
+        self.position.x += dist.x * self.speed.x
+        self.position.y += dist.y * self.speed.y
 
 register_entity(Circle)

@@ -1,5 +1,4 @@
 import pyray as rl
-import game
 
 class Particle:
     position: rl.Vector2

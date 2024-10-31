@@ -1,7 +1,7 @@
 import pyray as rl
 
 class Entity:
-    """ 
+    """
     Clase abstracta.
     Una entidad es un objeto el cual tiene la capacidad de desplazarse,
     representarse en la pantalla e interactuar visualmente (o no) con otras
@@ -79,7 +79,7 @@ class TexturedEntity(Entity):
             ),
             rl.Vector2(0,0),
             0, rl.WHITE
-        );
+        )
 
     def update_texture_info(self):
         self.texture_directions = 6
