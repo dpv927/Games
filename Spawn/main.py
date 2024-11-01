@@ -54,10 +54,6 @@ if __name__ == '__main__':
         camera.target.x = game.player.position.x
         camera.target.y = game.player.position.y
 
-        rl.begin_drawing()
-        rl.begin_mode_2d(camera)
-        rl.clear_background(rl.BLACK)
-
         map_dx -= game.player.position.x - game.player.previous_x
         map_dy -= game.player.position.y - game.player.previous_y
 
@@ -73,7 +69,7 @@ if __name__ == '__main__':
                 map_chunk[i] = map_chunk[i - 1]
 
             map_y -= 1
-            map_dy = 0
+            map_dy = map_dy - square_width
 
             for j in range(squares_horizontal + 2):
                 map_chunk[0][j] = perlin.noise_at(map_x + j, map_y)
@@ -85,7 +81,7 @@ if __name__ == '__main__':
                 map_chunk[i] = map_chunk[i + 1]
 
             map_y += 1
-            map_dy = 0
+            map_dy = map_dy + square_width
 
             for j in range(map_squares_horizontal):
                 map_chunk[map_squares_vertical - 1][j] = perlin.noise_at(map_x + j,
@@ -98,7 +94,7 @@ if __name__ == '__main__':
                 map_chunk[:,i] = map_chunk[:,i + 1]
 
             map_x += 1
-            map_dx = 0
+            map_dx = map_dx + square_width
 
             for j in range(map_squares_vertical):
                 map_chunk[j][map_squares_horizontal-1] = perlin.noise_at(map_x + map_squares_horizontal -1
@@ -111,10 +107,14 @@ if __name__ == '__main__':
                 map_chunk[:,i] = map_chunk[:,i - 1]
 
             map_x -= 1
-            map_dx = 0
+            map_dx = map_dx - square_width
 
             for j in range(map_squares_vertical):
                 map_chunk[j][0] = perlin.noise_at(map_x , map_y + j)
+
+        rl.begin_drawing()
+        rl.begin_mode_2d(camera)
+        rl.clear_background(rl.BLACK)
 
         # Here we just draw the map relatively to the player camera. Notice the
         # map_dx and map_dy parts to move the map "image" and let the player see
