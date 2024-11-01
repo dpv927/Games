@@ -30,7 +30,7 @@ if __name__ == '__main__':
     
     # Initialize perlin noise variables 
     # (For map generation)
-    squares_horizontal = 25
+    squares_horizontal = 50
     square_width = int(math.ceil(math.ceil(w/squares_horizontal)/s))
     squares_vertical = int(math.ceil((h/s)/square_width))
 
@@ -39,6 +39,8 @@ if __name__ == '__main__':
     map_chunk = np.zeros((map_squares_vertical, map_squares_horizontal))
     base_map_x = int(math.floor(-(w/2)/s)) - square_width
     base_map_y = int(math.floor(-(h/2)/s)) - square_width
+    previous_player_x = 0
+    previous_player_y = 0
     map_x = 0   # Perlin (x) a la izq arriba
     map_y = 0   # Perlin (y) a la izq arriba
     map_dx = 0
@@ -54,8 +56,10 @@ if __name__ == '__main__':
         camera.target.x = game.player.position.x
         camera.target.y = game.player.position.y
 
-        map_dx -= game.player.position.x - game.player.previous_x
-        map_dy -= game.player.position.y - game.player.previous_y
+        map_dx -= game.player.position.x - previous_player_x
+        map_dy -= game.player.position.y - previous_player_y
+        previous_player_x = game.player.position.x
+        previous_player_y = game.player.position.y
 
         # As we lower or raise the map "image" with map_dx and map_dy (following) 
         # the speed of the player to cause a moving sentation, we need to detect
@@ -139,7 +143,7 @@ if __name__ == '__main__':
                     square_width,
                     square_width,
                     color)
-        
+
         game.update_game()
         game.player.draw()  
 
