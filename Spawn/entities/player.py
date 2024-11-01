@@ -1,6 +1,5 @@
 from entity import TexturedEntity
 from particles.dirt_particle import DirtParticle
-from buff import Buff
 import pyray as rl 
 import registry
 import game
@@ -8,14 +7,9 @@ import random
 
 class Player(TexturedEntity):
 
-    texture: rl.Texture
-    buffs: list[Buff]
-
     def __init__(self):
         super().__init__(speed=rl.Vector2(5,5))
-        self.lerp_x = self.position.x
-        self.lerp_y = self.position.y
-        self.buffs = []
+        self.lerp = rl.Vector2(self.position.x, self.position.y)
         self.width = 50
         self.height = 50
 
@@ -31,17 +25,11 @@ class Player(TexturedEntity):
             y = self.position.y + self.height - 10
             game.create_particle(DirtParticle, rl.Vector2(x, y))        
 
-        self.lerp_x += movement.x * self.speed.x
-        self.lerp_y += movement.y * self.speed.y
+        self.lerp.x += movement.x * self.speed.x
+        self.lerp.y += movement.y * self.speed.y
         
-        self.position.x = rl.lerp(self.position.x, self.lerp_x, 0.15)
-        self.position.y = rl.lerp(self.position.y, self.lerp_y, 0.15)
-
-    def set_position(self, x, y):
-        self.position.x = x 
-        self.position.y = y 
-        self.lerp_x = x
-        self.lerp_y = y
+        self.position.x = rl.lerp(self.position.x, self.lerp.x, 0.15)
+        self.position.y = rl.lerp(self.position.y, self.lerp.y, 0.15)
 
 # Public player instance
 registry.register_texture(Player)

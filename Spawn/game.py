@@ -1,9 +1,11 @@
 from entities.player import Player
+from particle import Particle
+from entity import Entity
 import registry
 
-enemies = []      # List of registered enemies
-particles = []    # List of particles
-player = Player() # Instance of the player
+enemies: list[Entity]     = []  # List of existing enemies
+particles: list[Particle] = []  # List of existing particles
+player = Player()               # Instance of the player
 
 # List with all registered types of enemies
 registry.load_entities_modules()
