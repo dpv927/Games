@@ -15,6 +15,8 @@ class Player(TexturedEntity):
         super().__init__(speed=rl.Vector2(5,5))
         self.lerp_x = self.position.x
         self.lerp_y = self.position.y
+        self.previous_x = self.position.x
+        self.previous_y = self.position.y
         self.buffs = []
         self.width = 50
         self.height = 50
@@ -34,6 +36,8 @@ class Player(TexturedEntity):
         self.lerp_x += movement.x * self.speed.x
         self.lerp_y += movement.y * self.speed.y
         
+        self.previous_x = self.position.x
+        self.previous_y = self.position.y
         self.position.x = rl.lerp(self.position.x, self.lerp_x, 0.15)
         self.position.y = rl.lerp(self.position.y, self.lerp_y, 0.15)
 
