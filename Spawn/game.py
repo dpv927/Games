@@ -1,20 +1,27 @@
 from entities.player import Player
 from particle import Particle
 from entity import Entity
+from projectile import Projectile
 import registry
 
-enemies: list[Entity]     = []  # List of existing enemies
-particles: list[Particle] = []  # List of existing particles
-player = Player()               # Instance of the player
+enemies: list[Entity]         = [] # List of existing enemies
+particles: list[Particle]     = [] # List of existing particles
+projectiles: list[Projectile] = [] # List of existing projectiles
+player = Player()                  # Instance of the player
+
+window_width  = 0
+window_height = 0
+scale = 0
 
 # List with all registered types of enemies
 registry.load_entities_modules()
 enemy_classes = list(registry.entity_register.values())
 
 def update_game():
-    global enemies, particles
+    global enemies, particles,projectiles
     for enemy in enemies:
         enemy.move()
+        enemy.shoot()
         enemy.draw()
 
     for particle in particles:
@@ -22,16 +29,21 @@ def update_game():
         particle.update()
     particles = [p for p in particles if not p.is_done()]
 
+    for projectile in projectiles:
+        projectile.move()
+        projectile.draw()
+    projectiles = [p for p in projectiles if not p.is_done()]
+
 def create_enemy(enemy_class, position):
     # Todo create enemy and
     # register it at enemies
     pass
 
-def create_particle(particle_class, position):
-    particle = particle_class(position)
+def register_particle(particle):
     particles.append(particle)
-    pass
 
+def register_projectile(projectile):
+    projectiles.append(projectile)
 
 # TODO put this somewhre
 #def random_point_at_circunference(cx, cy, radius):

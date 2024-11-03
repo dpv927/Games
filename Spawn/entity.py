@@ -19,17 +19,12 @@ class Entity:
         self.speed = speed
         
     def move(self):
-        """ 
-        Funcion para el desplazamiento
-        por el espacio. Debe ser sobreescrita.
-        """
         pass
 
     def draw(self):
-        """
-        Funcion para la representacion de 
-        la entidad en la ventana. Debe ser sobreescrita.
-        """
+        pass
+
+    def shoot(self):
         pass
 
 
@@ -85,7 +80,7 @@ class TexturedEntity(Entity):
         self.texture_directions = 6
         self.sprite_width  = self.texture.width/self.texture_directions
         self.sprite_height = self.texture.height
-        self.current_sprite = rl.Rectangle(0, 0, self.sprite_width, self.texture.height);
+        self.current_sprite = rl.Rectangle(0, 0, self.sprite_width, self.texture.height)
 
     def change_sprite_direction(self, mx, my):
         if (mx == 0 and my == 0) or (mx == 0 and my > 0):
@@ -99,4 +94,3 @@ class TexturedEntity(Entity):
         elif (mx < 0 and my !=  0):
             self.current_sprite.x = TexturedEntity.Orientation.DIG_LEFT * self.sprite_width
         else: self.current_sprite.x = TexturedEntity.Orientation.DIG_RIGHT * self.sprite_width
-

@@ -1,6 +1,12 @@
 import pyray as rl
 
 class Particle:
+
+    """ 
+    A particle is just an object that can be spawn and 
+    dies after a few game frames, providing a visual effect.
+    """
+
     position: rl.Vector2
     life_frames: int
     frames: int
