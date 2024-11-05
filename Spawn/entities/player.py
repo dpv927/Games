@@ -12,6 +12,7 @@ class Player(TexturedEntity):
         super().__init__(speed=rl.Vector2(5,5))
         self.lerp = rl.Vector2(self.position.x, self.position.y)
         self.pressed_key = rl.KeyboardKey.KEY_NULL
+        self.cooldown_frames = 0
         self.width = 50
         self.height = 50
 
@@ -36,6 +37,9 @@ class Player(TexturedEntity):
     def shoot(self):
         if not rl.is_mouse_button_down(rl.MouseButton.MOUSE_BUTTON_LEFT):
             return # Nothing to do here
+        if self.cooldown_frames < MilkProjectile.cooldown_frames:
+            self.cooldown_frames += 1
+            return # Nothing to do here
 
         x = self.position.x + self.width/2
         y = self.position.y + self.height/2
@@ -44,9 +48,9 @@ class Player(TexturedEntity):
         mouse_y = (rl.get_mouse_y() - (game.window_height/2))/game.scale - self.height/2
 
         position = rl.Vector2(x, y)
-        direction = rl.vector2_normalize(rl.Vector2(mouse_x, mouse_y))                               
+        direction = rl.vector2_normalize(rl.Vector2(mouse_x, mouse_y))
         game.register_projectile(MilkProjectile(position=position, direction=direction))
-
+        self.cooldown_frames = 0
 
 # Public player instance
 registry.register_texture(Player)

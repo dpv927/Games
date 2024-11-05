@@ -15,7 +15,8 @@ class Projectile:
     direction: rl.Vector2
     father: Entity
     life_frames: int
-    frames: int
+    life_frames_count: int
+    cooldown_frames: int
 
     def __init__(self, position=rl.Vector2(0,0), speed=rl.Vector2(0,0), 
                  direction=rl.Vector2(0,0), father=None):
@@ -24,7 +25,8 @@ class Projectile:
         self.direction = direction
         self.father = father
         self.life_frames = 0
-        self.frames = 0
+        self.life_frames_count = 0
+        self.cooldown_frames = 0
 
     def move(self):
         pass
@@ -33,7 +35,7 @@ class Projectile:
         pass
 
     def is_done(self) -> bool:
-        return self.frames == self.life_frames
+        return self.life_frames_count == self.life_frames
 
 
 class TexturedProjectile(Projectile):
